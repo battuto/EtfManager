@@ -1,14 +1,5 @@
-import { getAll } from '../config/database.js';
-import { fetchCurrentPrice, fetchHistoricalData } from '../utils/priceUtils.js';
-
-// Cache per i dati storici
-const ANALYTICS_CACHE = {
-    historicalData: new Map(),
-    expiry: new Map()
-};
-
-// TTL per i dati analitici (4 ore)
-const CACHE_TTL = 4 * 60 * 60 * 1000;
+import {getAll} from '../config/database.js';
+import {fetchCurrentPrice, fetchHistoricalData} from '../utils/priceUtils.js';
 
 /**
  * Controller per ottenere i dati storici del portfolio
@@ -74,15 +65,6 @@ export async function getPortfolioMetrics(req, res) {
  */
 export async function getHistoricalData(portfolioId, days = 30) {
     try {
-        // Verifica cache
-        const cacheKey = `${portfolioId}_${days}`;
-        const now = Date.now();
-
-        if (ANALYTICS_CACHE.historicalData.has(cacheKey) &&
-            ANALYTICS_CACHE.expiry.get(cacheKey) > now) {
-            console.log(`Usando dati storici dalla cache per portfolio ${portfolioId}`);
-            return ANALYTICS_CACHE.historicalData.get(cacheKey);
-        }
 
         // Ottieni investimenti del portfolio
         const investments = await getAll(
@@ -163,13 +145,7 @@ export async function getHistoricalData(portfolioId, days = 30) {
             sortedDates.push(todayStr);
             portfolioValues.push(todayTotal);
         }
-        const result = { dates: sortedDates, values: portfolioValues };
-
-        // Salva in cache
-        ANALYTICS_CACHE.historicalData.set(cacheKey, result);
-        ANALYTICS_CACHE.expiry.set(cacheKey, now + CACHE_TTL);
-
-        return result;
+        return {dates: sortedDates, values: portfolioValues};
     } catch (error) {
         console.error('Errore nell\'elaborazione dei dati storici:', error);
         throw error;
@@ -210,18 +186,6 @@ function generateSimulatedData(investment, days, combinedDates) {
     };
 }
 
-/**
- * Invalida la cache per un portfolio specifico
- */
-export function invalidateAnalyticsCache(portfolioId) {
-    // Rimuovi tutte le chiavi relative al portfolio
-    for (const key of ANALYTICS_CACHE.historicalData.keys()) {
-        if (key.startsWith(`${portfolioId}_`)) {
-            ANALYTICS_CACHE.historicalData.delete(key);
-            ANALYTICS_CACHE.expiry.delete(key);
-        }
-    }
-}
 
 /**
  * Calcola metriche di analisi avanzate per un portfolio

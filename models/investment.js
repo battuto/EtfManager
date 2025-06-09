@@ -1,12 +1,6 @@
 import { getDb, getAll, get, runQuery, runTransaction } from '../config/database.js';
 import { fetchCurrentPrice } from '../utils/priceUtils.js';
 
-const INVESTMENT_CACHE = {
-    investments: new Map(),
-    lastFetch: 0,
-    ttl: 60000 // 1 minuto
-};
-
 /**
  * Ottiene tutti gli investimenti
  */
@@ -20,14 +14,9 @@ export function getAllInvestments() {
  */
 export async function getInvestmentsWithCurrentPrice(portfolioId = 1) {
     try {
-        // Verifica se abbiamo dati recenti in cache per questo portfolio
-        const cacheKey = `portfolio_${portfolioId}`;
+
         const now = Date.now();
 
-        if (INVESTMENT_CACHE.investments.has(cacheKey) &&
-            now - INVESTMENT_CACHE.lastFetch < INVESTMENT_CACHE.ttl) {
-            return INVESTMENT_CACHE.investments.get(cacheKey);
-        }
 
         // Esegui query ottimizzata con indici
         const rows = await getAll(`
@@ -82,10 +71,6 @@ export async function getInvestmentsWithCurrentPrice(portfolioId = 1) {
 
         // Attendi il completamento di tutte le promesse in parallelo
         const investments = await Promise.all(investmentPromises);
-
-        // Aggiorna la cache
-        INVESTMENT_CACHE.investments.set(cacheKey, investments);
-        INVESTMENT_CACHE.lastFetch = now;
 
         return investments;
     } catch (error) {
@@ -144,8 +129,6 @@ export async function getPurchaseHistoryByTicker(portfolioId, ticker) {
 export async function addInvestment(investment) {
     const { ticker, shares, buy_price, buy_date, portfolio_id = 1 } = investment;
 
-    // Invalida la cache
-    invalidateCache(portfolio_id);
 
     // Cerca ISIN per il ticker (richiama findIsinFromJustETF tramite findIsin)
     try {
@@ -171,9 +154,6 @@ export async function updateInvestment(id, investment) {
 
     // Ottieni il portfolio_id per invalidare la cache
     const invData = await get('SELECT portfolio_id FROM investments WHERE id = ?', [id]);
-    if (invData && invData.portfolio_id) {
-        invalidateCache(invData.portfolio_id);
-    }
 
     return runQuery(
         'UPDATE investments SET ticker = ?, shares = ?, buy_price = ?, buy_date = ? WHERE id = ?',
@@ -187,9 +167,6 @@ export async function updateInvestment(id, investment) {
 export async function deleteInvestment(id) {
     // Ottieni il portfolio_id per invalidare la cache
     const invData = await get('SELECT portfolio_id FROM investments WHERE id = ?', [id]);
-    if (invData && invData.portfolio_id) {
-        invalidateCache(invData.portfolio_id);
-    }
 
     return runQuery('DELETE FROM investments WHERE id = ?', [id]);
 }
@@ -198,13 +175,6 @@ export async function deleteInvestment(id) {
  * Sposta un investimento tra portfolio
  */
 export async function moveInvestment(investmentId, targetPortfolioId) {
-    // Ottieni il portfolio_id corrente per invalidare la cache
-    const invData = await get('SELECT portfolio_id FROM investments WHERE id = ?', [investmentId]);
-    if (invData && invData.portfolio_id) {
-        // Invalida sia il portfolio di origine che quello di destinazione
-        invalidateCache(invData.portfolio_id);
-        invalidateCache(targetPortfolioId);
-    }
 
     return runQuery(
         'UPDATE investments SET portfolio_id = ? WHERE id = ?',
@@ -218,14 +188,6 @@ export async function moveInvestment(investmentId, targetPortfolioId) {
 export function getAllInvestmentsByPortfolio(portfolioId) {
     return getAll('SELECT id, ticker, shares, buy_price, buy_date FROM investments WHERE portfolio_id = ?',
         [portfolioId]);
-}
-
-/**
- * Invalida la cache degli investimenti per un portfolio
- */
-function invalidateCache(portfolioId) {
-    const cacheKey = `portfolio_${portfolioId}`;
-    INVESTMENT_CACHE.investments.delete(cacheKey);
 }
 
 /**
@@ -248,11 +210,6 @@ export async function batchUpdateInvestments(operations) {
         } else if (op.type === 'update') {
             const { id, ticker, shares, buy_price, buy_date } = op.data;
 
-            // Ottieni il portfolio_id per invalidare la cache
-            const invData = await get('SELECT portfolio_id FROM investments WHERE id = ?', [id]);
-            if (invData && invData.portfolio_id) {
-                portfoliosToInvalidate.add(invData.portfolio_id);
-            }
 
             queries.push({
                 sql: 'UPDATE investments SET ticker = ?, shares = ?, buy_price = ?, buy_date = ? WHERE id = ?',
@@ -260,12 +217,6 @@ export async function batchUpdateInvestments(operations) {
             });
         } else if (op.type === 'delete') {
             const id = op.data;
-
-            // Ottieni il portfolio_id per invalidare la cache
-            const invData = await get('SELECT portfolio_id FROM investments WHERE id = ?', [id]);
-            if (invData && invData.portfolio_id) {
-                portfoliosToInvalidate.add(invData.portfolio_id);
-            }
 
             queries.push({
                 sql: 'DELETE FROM investments WHERE id = ?',
@@ -276,9 +227,6 @@ export async function batchUpdateInvestments(operations) {
 
     // Esegui la transazione
     const results = await runTransaction(queries);
-
-    // Invalida le cache
-    portfoliosToInvalidate.forEach(portfolioId => invalidateCache(portfolioId));
 
     return results;
 }

@@ -3,7 +3,6 @@ import { getIndexPage, createInvestment, updateInvestment, deleteInvestment, mov
 import { createPortfolio, updatePortfolio, getPortfolios } from '../controllers/portfolioController.js';
 import { getHistoricalPortfolioData, getPortfolioMetrics } from '../controllers/analyticsController.js';
 import { getPurchaseHistoryByTicker } from '../models/investment.js';
-import { clearCache, getCacheStats } from '../utils/priceUtils.js';
 import { optimizeDatabase } from '../config/database.js';
 
 const router = express.Router();
@@ -51,17 +50,6 @@ router.post('/investments/move', asyncHandler(moveInvestmentBetweenPortfolios));
 router.get('/analytics/historical/:portfolioId', asyncHandler(getHistoricalPortfolioData));
 router.get('/analytics/metrics/:portfolioId', asyncHandler(getPortfolioMetrics));
 
-// Rotte di manutenzione sistema (protette da API key in produzione)
-router.post('/system/cache/clear', asyncHandler(async (req, res) => {
-    const type = req.query.type || 'all';
-    clearCache(type);
-    res.json({ success: true, message: `Cache ${type} pulita con successo` });
-}));
-
-router.get('/system/cache/stats', asyncHandler(async (req, res) => {
-    const stats = getCacheStats();
-    res.json({ success: true, stats });
-}));
 
 router.post('/system/database/optimize', asyncHandler(async (req, res) => {
     await optimizeDatabase();

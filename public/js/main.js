@@ -5,9 +5,6 @@ document.addEventListener('DOMContentLoaded', function () {
     initializeThemeToggle();
     initializeTableActions();
 
-    // Gestione cache browser per migliorare performance
-    setupCacheManagement();
-
     // Caricamento asincrono dei grafici
     if (document.getElementById('compositionChart')) {
         loadAnalyticsCharts();
@@ -595,47 +592,6 @@ function hideLoadingOverlay() {
     if (overlay) {
         overlay.style.display = 'none';
     }
-}
-
-// Gestione cache browser
-function setupCacheManagement() {
-    // Imposta versione dell'applicazione per invalidare cache
-    const APP_VERSION = '1.0.0';
-    const storedVersion = localStorage.getItem('app_version');
-
-    // Se versione diversa, pulisci cache locale
-    if (storedVersion !== APP_VERSION) {
-        clearLocalCache();
-        localStorage.setItem('app_version', APP_VERSION);
-    }
-
-    // Aggiungi gestione pulizia cache
-    const clearCacheBtn = document.getElementById('clearCacheBtn');
-    if (clearCacheBtn) {
-        clearCacheBtn.addEventListener('click', function() {
-            clearLocalCache();
-            Swal.fire({
-                title: 'Cache pulita',
-                text: 'La cache locale è stata pulita con successo',
-                icon: 'success',
-                showConfirmButton: false,
-                timer: 1500
-            });
-        });
-    }
-}
-
-// Pulisci cache locale
-function clearLocalCache() {
-    // Mantieni solo il tema e la versione dell'app
-    const theme = localStorage.getItem('theme');
-    const version = localStorage.getItem('app_version');
-    localStorage.clear();
-    if (theme) localStorage.setItem('theme', theme);
-    if (version) localStorage.setItem('app_version', version);
-
-    // Pulisci sessionStorage
-    sessionStorage.clear();
 }
 
 // Gestisci animazioni
