@@ -1,0 +1,695 @@
+<%- include('./partials/header') %>
+
+<!-- Portfolio Selector - PUNTO 3 -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <label for="portfolioSelect" class="form-label mb-0">Seleziona Portfolio:</label>
+                        <select id="portfolioSelect" class="form-select form-select-sm d-inline-block ms-2" style="width: auto;">
+                            <% portfolios.forEach(portfolio => { %>
+                                <option value="<%= portfolio.id %>" <%= currentPortfolio.id === portfolio.id ? 'selected' : '' %>>
+                                    <%= portfolio.name %>
+                                </option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    <div>
+                        <button id="newPortfolioBtn" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-plus-circle"></i> Nuovo Portfolio
+                        </button>
+                        <button id="editPortfolioBtn" class="btn btn-sm btn-outline-secondary ms-1">
+                            <i class="bi bi-pencil"></i> Modifica
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Analytics Section - PUNTO 4 -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-lg border-0 animate__animated animate__fadeIn">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-graph-up-arrow me-2"></i>Analytics
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card shadow-sm border-0 mb-3">
+                            <div class="card-body">
+                                <canvas id="compositionChart" height="250"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card shadow-sm border-0 mb-3">
+                            <div class="card-body">
+                                <canvas id="performanceChart" height="250"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-body">
+                                <canvas id="timelineChart" height="200"></canvas>
+                                <!-- Period selector for timeline chart -->
+                                <div class="mt-2 text-center">
+                                    <div class="btn-group" role="group" id="timelinePeriodButtons">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary active" data-days="7">7g</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" data-days="30">30g</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" data-days="90">90g</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" data-days="365">1a</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" data-days="ytd">YTD</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4 g-4">
+    <div class="col-md-6">
+        <div class="card shadow-lg border-0 h-100 animate__animated animate__fadeInLeft">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0"><i class="bi bi-plus-square-fill me-2"></i>Aggiungi nuovo investimento</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="/add" class="row g-3" id="addInvestmentForm">
+                    <input type="hidden" name="portfolio_id" value="<%= currentPortfolio.id %>">
+                    <div class="col-md-6">
+                        <label for="ticker" class="form-label">Ticker ETF</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-tag"></i></span>
+                            <input type="text" class="form-control" id="ticker" name="ticker" placeholder="es. VWCE" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="shares" class="form-label">Numero di quote</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-123"></i></span>
+                            <input type="number" class="form-control" id="shares" name="shares" step="1" min="1" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="buy_price" class="form-label">Prezzo d'acquisto</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-currency-euro"></i></span>
+                            <input type="number" class="form-control" id="buy_price" name="buy_price" step="0.01" min="0.01" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="buy_date" class="form-label">Data d'acquisto</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                            <input type="date" class="form-control" id="buy_date" name="buy_date" required>
+                        </div>
+                    </div>
+                    <div class="col-12 text-end">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-plus-circle me-2"></i>Aggiungi
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-lg border-0 h-100 animate__animated animate__fadeInRight">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0"><i class="bi bi-clipboard-data me-2"></i>Riepilogo Portfolio</h5>
+            </div>
+            <div class="card-body">
+                <% if (investments.length > 0) { %>
+                    <div class="row text-center g-3">
+                        <div class="col-md-6">
+                            <div class="card border-left-primary shadow-sm h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                Capitale Investito
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold">
+                                                <%= totalInvested.toFixed(2) %>€
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="bi bi-cash-stack text-primary fs-2"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-left-success shadow-sm h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                Valore Attuale
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold">
+                                                <%= totalCurrentValue.toFixed(2) %>€
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="bi bi-wallet2 text-success fs-2"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card <%= totalProfit >= 0 ? 'border-left-success' : 'border-left-danger' %> shadow-sm h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold <%= totalProfit >= 0 ? 'text-success' : 'text-danger' %> text-uppercase mb-1">
+                                                Profitto / Perdita
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold <%= totalProfit >= 0 ? 'text-success' : 'text-danger' %>">
+                                                <%= totalProfit > 0 ? '+' : '' %><%= totalProfit.toFixed(2) %>€
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="bi <%= totalProfit >= 0 ? 'bi-graph-up-arrow text-success' : 'bi-graph-down-arrow text-danger' %> fs-2"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card <%= totalPercentChange >= 0 ? 'border-left-success' : 'border-left-danger' %> shadow-sm h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold <%= totalPercentChange >= 0 ? 'text-success' : 'text-danger' %> text-uppercase mb-1">
+                                                Rendimento
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold <%= totalPercentChange >= 0 ? 'text-success' : 'text-danger' %>">
+                                                <%= totalPercentChange > 0 ? '+' : '' %><%= totalPercentChange.toFixed(2) %>%
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="bi bi-percent fa-2x <%= totalPercentChange >= 0 ? 'text-success' : 'text-danger' %>"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <div class="text-center p-5">
+                        <i class="bi bi-graph-up-arrow fs-1 text-muted mb-3"></i>
+                        <p class="lead">Non hai ancora aggiunto investimenti.</p>
+                        <p class="text-muted">Inizia aggiungendo il tuo primo ETF!</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<% if (investments.length > 0) { %>
+    <div class="card shadow-lg border-0 mb-4 animate__animated animate__fadeInUp">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0"><i class="bi bi-table me-2"></i>I tuoi investimenti</h5>
+            <button id="exportDataBtn" class="btn btn-sm btn-light">
+                <i class="bi bi-download"></i> Esporta
+            </button>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle" id="investmentsTable">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Ticker</th>
+                        <th>Quote</th>
+                        <th>Prezzo Acquisto</th>
+                        <th>Data</th>
+                        <th>Prezzo Attuale</th>
+                        <th>Valore</th>
+                        <th>Profit/Loss</th>
+                        <th>Variazione %</th>
+                        <th>Azioni</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <% investments.forEach(inv => { %>
+                        <tr data-investment-id="<%= inv.id %>" data-ticker="<%= inv.ticker %>">
+                            <td class="fw-bold">
+                                <div class="d-flex align-items-center">
+                                    <%= inv.ticker %>
+                                    <button type="button" class="toggle-history ms-2" data-bs-toggle="tooltip" title="Mostra dettagli acquisti">
+                                        <i class="bi bi-chevron-down"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            <td><%= inv.shares %></td>
+                            <td><%= inv.buy_price.toFixed(2) %>€</td>
+                            <td><%= new Date(inv.buy_date).toLocaleDateString('it-IT') %></td>
+                            <td>
+                                <% if (inv.current_price !== null) { %>
+                                    <%= inv.current_price.toFixed(2) %>€
+                                <% } else { %>
+                                    <span class="text-muted">N/D</span>
+                                <% } %>
+                            </td>
+                            <td>
+                                <% if (inv.current_value !== null) { %>
+                                    <%= inv.current_value.toFixed(2) %>€
+                                <% } else { %>
+                                    <span class="text-muted">N/D</span>
+                                <% } %>
+                            </td>
+                            <td>
+                                <% if (inv.profit_loss >= 0) { %>
+                                    <span class="badge bg-success text-white px-2 py-1">
+                                    <i class="bi bi-arrow-up"></i>
+                                    +<%= inv.profit_loss.toFixed(2) %>€
+                                </span>
+                                <% } else { %>
+                                    <span class="badge bg-danger text-white px-2 py-1">
+                                    <i class="bi bi-arrow-down"></i>
+                                    <%= inv.profit_loss.toFixed(2) %>€
+                                </span>
+                                <% } %>
+                            </td>
+                            <td>
+                                <% if (inv.percent_change >= 0) { %>
+                                    <span class="badge bg-success text-white px-2 py-1">
+                                    <i class="bi bi-graph-up"></i>
+                                    +<%= inv.percent_change.toFixed(2) %>%
+                                </span>
+                                <% } else { %>
+                                    <span class="badge bg-danger text-white px-2 py-1">
+                                    <i class="bi bi-graph-down"></i>
+                                    <%= inv.percent_change.toFixed(2) %>%
+                                </span>
+                                <% } %>
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-outline-primary edit-btn" data-bs-toggle="tooltip" title="Modifica">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger delete-btn" data-bs-toggle="tooltip" title="Elimina">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary move-btn" data-bs-toggle="tooltip" title="Sposta">
+                                        <i class="bi bi-arrows-move"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+<% } %>
+
+<script src="/js/charts.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        const portfolioSelector = document.getElementById('portfolioSelect');
+        if (portfolioSelector) {
+            portfolioSelector.addEventListener('change', function() {
+                console.log(`Cambio portfolio a: ${this.value}`);
+                window.location.href = `/?portfolio=${this.value}`;
+            });
+        }
+
+        <% if (investments.length > 0) { %>
+        // Inizializza tutti i grafici
+        const charts = new PortfolioCharts(<%- JSON.stringify(investments) %>);
+        charts.renderCompositionChart('compositionChart');
+        charts.renderPerformanceChart('performanceChart');
+
+        // Timeline chart with dynamic period selection
+        (function() {
+            const periodButtons = document.getElementById('timelinePeriodButtons');
+            const ctx = document.getElementById('timelineChart').getContext('2d');
+            let timelineChart;
+            const portfolioId = <%= currentPortfolio.id %>;
+
+            function updateTimeline(param) {
+                // Gestione YTD special
+                let days = param;
+                let label = param;
+                if (param === 'ytd') {
+                    const today = new Date();
+                    const startOfYear = new Date(today.getFullYear(), 0, 1);
+                    days = Math.ceil((today - startOfYear) / (1000 * 60 * 60 * 24));
+                    label = 'YTD';
+                }
+                fetch(`/analytics/historical/${portfolioId}?days=${days}`)
+                    .then(r => r.json())
+                    .then(data => {
+                        if (!data.success) return;
+
+                        // Crea una linea per il valore investito (costante nel tempo)
+                        const totalInvested = <%= totalInvested %>;
+                        const investedLine = Array(data.data.dates.length).fill(totalInvested);
+
+                        const cfg = {
+                            type: 'line',
+                            data: {
+                                labels: data.data.dates,
+                                datasets: [
+                                    {
+                                        label: 'Valore Portfolio',
+                                        data: data.data.values,
+                                        borderColor: 'rgba(78, 115, 223, 1)',
+                                        backgroundColor: 'rgba(78, 115, 223, 0.2)',
+                                        borderWidth: 2,
+                                        fill: true,
+                                        tension: 0.1
+                                    },
+                                    {
+                                        label: 'Capitale Investito',
+                                        data: investedLine,
+                                        borderColor: 'rgba(246, 194, 62, 1)',
+                                        borderWidth: 2,
+                                        borderDash: [5, 5],
+                                        fill: false,
+                                        pointRadius: 0
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    title: {
+                                        display: true,
+                                        text: `Andamento Portfolio (${label})`,
+                                        font: { size: 16 }
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                const value = context.raw;
+                                                return `${context.dataset.label}: ${value.toFixed(2)}€`;
+                                            }
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    x: {
+                                        title: { display: true, text: 'Data' }
+                                    },
+                                    y: {
+                                        title: { display: true, text: 'Valore (€)' },
+                                        beginAtZero: false
+                                    }
+                                },
+                                interaction: {
+                                    mode: 'index',
+                                    intersect: false
+                                }
+                            }
+                        };
+                        if (timelineChart) timelineChart.destroy();
+                        timelineChart = new Chart(ctx, cfg);
+                    })
+                    .catch(err => console.error('Errore recupero dati storici:', err));
+            }
+
+            // Handle button clicks
+            periodButtons.addEventListener('click', e => {
+                if (e.target.matches('button[data-days]')) {
+                    periodButtons.querySelector('.active').classList.remove('active');
+                    e.target.classList.add('active');
+                    updateTimeline(e.target.getAttribute('data-days'));
+                }
+            });
+            // Initial load
+            updateTimeline(30);
+        })();
+
+        // Nuovo portfolio
+        document.getElementById('newPortfolioBtn').addEventListener('click', function() {
+            Swal.fire({
+                title: 'Nuovo Portfolio',
+                html: `
+                        <input id="portfolioName" class="swal2-input" placeholder="Nome portfolio">
+                        <textarea id="portfolioDesc" class="swal2-textarea" placeholder="Descrizione (opzionale)"></textarea>
+                    `,
+                showCancelButton: true,
+                confirmButtonText: 'Crea',
+                cancelButtonText: 'Annulla',
+                preConfirm: () => {
+                    const name = document.getElementById('portfolioName').value;
+                    const description = document.getElementById('portfolioDesc').value;
+                    if (!name) {
+                        Swal.showValidationMessage('Il nome è obbligatorio');
+                        return false;
+                    }
+                    return { name, description };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch('/portfolios/create', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(result.value)
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                window.location.href = `/?portfolio=${data.id}`;
+                            }
+                        });
+                }
+            });
+        });
+
+        // Modifica portfolio
+        document.getElementById('editPortfolioBtn').addEventListener('click', function() {
+            Swal.fire({
+                title: 'Modifica Portfolio',
+                html: `
+                        <input id="portfolioName" class="swal2-input" value="<%= currentPortfolio.name %>" placeholder="Nome portfolio">
+                        <textarea id="portfolioDesc" class="swal2-textarea" placeholder="Descrizione (opzionale)"><%= currentPortfolio.description %></textarea>
+                    `,
+                showCancelButton: true,
+                confirmButtonText: 'Aggiorna',
+                cancelButtonText: 'Annulla',
+                preConfirm: () => {
+                    const name = document.getElementById('portfolioName').value;
+                    const description = document.getElementById('portfolioDesc').value;
+                    if (!name) {
+                        Swal.showValidationMessage('Il nome è obbligatorio');
+                        return false;
+                    }
+                    return { name, description };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/portfolios/<%= currentPortfolio.id %>`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(result.value)
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                window.location.reload();
+                            }
+                        });
+                }
+            });
+        });
+
+        // Modifica investimento
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const row = this.closest('tr');
+                const id = row.dataset.investmentId;
+                const ticker = row.cells[0].textContent;
+                const shares = row.cells[1].textContent;
+                const buyPrice = parseFloat(row.cells[2].textContent);
+                const buyDate = new Date(row.cells[3].textContent.split('/').reverse().join('-'));
+
+                Swal.fire({
+                    title: 'Modifica Investimento',
+                    html: `
+                            <div class="mb-3">
+                                <label class="form-label">Ticker</label>
+                                <input id="editTicker" class="form-control" value="${ticker}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Quote</label>
+                                <input id="editShares" type="number" step="1" min="1" class="form-control" value="${shares}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Prezzo d'acquisto</label>
+                                <input id="editBuyPrice" type="number" step="0.01" min="0.01" class="form-control" value="${buyPrice}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Data d'acquisto</label>
+                                <input id="editBuyDate" type="date" class="form-control" value="${buyDate.toISOString().split('T')[0]}">
+                            </div>
+                        `,
+                    showCancelButton: true,
+                    confirmButtonText: 'Salva',
+                    cancelButtonText: 'Annulla',
+                    preConfirm: () => {
+                        const ticker = document.getElementById('editTicker').value;
+                        const shares = document.getElementById('editShares').value;
+                        const buyPrice = document.getElementById('editBuyPrice').value;
+                        const buyDate = document.getElementById('editBuyDate').value;
+
+                        if (!ticker || !shares || !buyPrice || !buyDate) {
+                            Swal.showValidationMessage('Tutti i campi sono obbligatori');
+                            return false;
+                        }
+
+                        return { ticker, shares, buy_price: buyPrice, buy_date: buyDate };
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch(`/investments/${id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(result.value)
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    window.location.reload();
+                                }
+                            });
+                    }
+                });
+            });
+        });
+
+        // Elimina investimento
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const row = this.closest('tr');
+                const id = row.dataset.investmentId;
+                const ticker = row.cells[0].textContent;
+
+                Swal.fire({
+                    title: 'Conferma eliminazione',
+                    text: `Sei sicuro di voler eliminare ${ticker} dal portfolio?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Elimina',
+                    cancelButtonText: 'Annulla',
+                    confirmButtonColor: '#d33'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch(`/investments/${id}`, { method: 'DELETE' })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    window.location.reload();
+                                }
+                            });
+                    }
+                });
+            });
+        });
+
+        // Sposta investimento
+        document.querySelectorAll('.move-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const row = this.closest('tr');
+                const id = row.dataset.investmentId;
+                const ticker = row.cells[0].textContent;
+
+                fetch('/portfolios')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Usa i parametri URL invece della variabile EJS
+                            const urlParams = new URLSearchParams(window.location.search);
+                            const currentPortfolioId = parseInt(urlParams.get('portfolio') || 1);
+                            const portfolios = data.portfolios.filter(p => p.id !== currentPortfolioId);
+
+                            if (portfolios.length > 0) {
+                                let options = '';
+                                portfolios.forEach(p => {
+                                    options += `<option value="${p.id}">${p.name}</option>`;
+                                });
+
+                                Swal.fire({
+                                    title: 'Sposta Investimento',
+                                    html: `
+                                <p>Sposta ${ticker} in un altro portfolio:</p>
+                                <select id="targetPortfolio" class="form-select">
+                                    ${options}
+                                </select>
+                            `,
+                                    showCancelButton: true,
+                                    confirmButtonText: 'Sposta',
+                                    cancelButtonText: 'Annulla'
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        const targetPortfolioId = document.getElementById('targetPortfolio').value;
+
+                                        fetch('/investments/move', {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ investmentId: id, targetPortfolioId })
+                                        })
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                if (data.success) {
+                                                    window.location.reload();
+                                                }
+                                            });
+                                    }
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Nessun portfolio disponibile',
+                                    text: 'Devi creare altri portfolio per poter spostare questo investimento.',
+                                    icon: 'info',
+                                    confirmButtonText: 'Ok'
+                                });
+                            }
+                        }
+                    });
+            });
+        });
+
+        // Form submission con SweetAlert
+        document.getElementById('addInvestmentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: 'Confermare?',
+                text: 'Vuoi aggiungere questo investimento al tuo portfolio?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Aggiungi',
+                cancelButtonText: 'Annulla'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.submit();
+                }
+            });
+        });
+        <% } %>
+    });
+</script>

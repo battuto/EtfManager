@@ -1,0 +1,295 @@
+/*
+* ====================================
+* VARIABILI CSS
+* ====================================
+*/
+:root {
+    /* Colori principali */
+    --color-primary: #4e73df;
+    --color-primary-dark: #2e59d9;
+    --color-primary-darker: #2653d4;
+    --color-success: #1cc88a;
+    --color-danger: #e74a3b;
+    --color-light: #f8f9fa;
+    --color-dark: #212529;
+
+    /* Colori sfumati */
+    --color-gray-100: #f8f9fa;
+    --color-gray-200: #e9ecef;
+    --color-gray-300: #dee2e6;
+    --color-gray-400: #ced4da;
+    --color-gray-500: #adb5bd;
+    --color-gray-600: #6c757d;
+    --color-gray-700: #495057;
+    --color-gray-800: #343a40;
+    --color-gray-900: #212529;
+
+    /* Parametri di design */
+    --border-radius: 1rem;
+    --border-radius-sm: 0.5rem;
+    --transition-standard: all 0.3s ease;
+    --transition-fast: all 0.2s ease;
+    --shadow-sm: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    --shadow-md: 0 10px 25px rgba(0, 0, 0, 0.1);
+    --shadow-btn: 0 4px 6px rgba(78, 115, 223, 0.25);
+    --shadow-btn-hover: 0 6px 12px rgba(78, 115, 223, 0.3);
+}
+
+/*
+* ====================================
+* STILI BASE
+* ====================================
+*/
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--color-gray-100);
+    transition: var(--transition-standard);
+}
+
+.table th,
+.table td {
+    vertical-align: middle;
+    padding: 0.75rem 1rem;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(78, 115, 223, 0.05);
+}
+
+.input-group-text {
+    background-color: var(--color-gray-100);
+}
+
+/*
+* ====================================
+* TEMA SCURO
+* ====================================
+*/
+body.dark-mode {
+    background-color: var(--color-dark);
+    color: var(--color-light);
+}
+
+body.dark-mode .card,
+body.dark-mode .card-header {
+    background-color: var(--color-gray-800);
+    border-color: var(--color-gray-700);
+}
+
+body.dark-mode .text-dark {
+    color: var(--color-light) !important;
+}
+
+body.dark-mode .text-muted {
+    color: var(--color-gray-500) !important;
+}
+
+body.dark-mode .border-bottom {
+    border-color: var(--color-gray-700) !important;
+}
+
+body.dark-mode .table {
+    color: var(--color-light);
+}
+
+body.dark-mode .table-light th {
+    background-color: var(--color-gray-700) !important;
+    color: var(--color-light);
+}
+
+body.dark-mode .toggle-history {
+    background-color: var(--color-gray-700);
+    color: var(--color-light);
+    border-color: var(--color-gray-600);
+}
+
+body.dark-mode .toggle-history:hover {
+    background-color: var(--color-gray-600);
+}
+
+body.dark-mode .toggle-purchase-details {
+    background: var(--color-gray-700);
+    color: var(--color-light);
+}
+
+body.dark-mode .toggle-purchase-details:hover {
+    background: var(--color-gray-600);
+}
+
+body.dark-mode .purchase-details-row {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/*
+* ====================================
+* COMPONENTI - CARD
+* ====================================
+*/
+.card {
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    transition: var(--transition-standard);
+    border: none;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+}
+
+.card-header {
+    border-bottom: none;
+    padding: 1rem 1.5rem;
+}
+
+.card.border-left-primary,
+.card.border-left-success,
+.card.border-left-danger {
+    border-radius: var(--border-radius-sm);
+    box-shadow: var(--shadow-sm);
+}
+
+.border-left-success {
+    border-left: 0.25rem solid var(--color-success) !important;
+}
+
+.border-left-danger {
+    border-left: 0.25rem solid var(--color-danger) !important;
+}
+
+.border-left-primary {
+    border-left: 0.25rem solid var(--color-primary) !important;
+}
+
+/*
+* ====================================
+* COMPONENTI - PULSANTI E BADGE
+* ====================================
+*/
+.btn-primary {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-btn);
+    transition: var(--transition-fast);
+}
+
+.btn-primary:hover {
+    background-color: var(--color-primary-dark);
+    border-color: var(--color-primary-darker);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-btn-hover);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.badge {
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.bg-primary {
+    background-color: var(--color-primary) !important;
+}
+
+/*
+* ====================================
+* ANIMAZIONI
+* ====================================
+*/
+.animate__fadeIn {
+    animation-duration: 0.7s;
+}
+
+.animate__fadeInLeft,
+.animate__fadeInRight,
+.animate__fadeInUp {
+    animation-duration: 1s;
+    animation-delay: 0.2s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/*
+* ====================================
+* DETTAGLI ACQUISTI
+* ====================================
+*/
+.toggle-purchase-details {
+    cursor: pointer;
+    padding: 3px 8px;
+    border-radius: 50%;
+    border: none;
+    background: #eaeaea;
+    transition: var(--transition-fast);
+}
+
+.toggle-purchase-details:hover {
+    background: #d1d1d1;
+    transform: scale(1.1);
+}
+
+.toggle-history {
+    cursor: pointer;
+    padding: 4px 8px;
+    margin-left: 8px;
+    border-radius: 4px;
+    background-color: var(--color-gray-200);
+    border: 1px solid var(--color-gray-300);
+    transition: var(--transition-fast);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toggle-history:hover {
+    background-color: var(--color-primary);
+    color: white;
+    transform: scale(1.1);
+}
+
+.toggle-history i {
+    font-size: 0.8rem;
+}
+
+.purchase-details-row {
+    background-color: rgba(0, 0, 0, 0.02);
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.purchase-details-row td {
+    padding: 0 !important;
+}
+
+.purchase-details-row .table {
+    margin-bottom: 0;
+}
+
+.loading {
+    position: relative;
+    min-height: 200px;
+}
+
+.chart-container canvas {
+    transition: opacity 0.3s;
+}
+
+.loading canvas {
+    opacity: 0.5;
+}
+
+.chart-loading-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+}
+
+.alert {
+    margin-bottom: 0;
+}

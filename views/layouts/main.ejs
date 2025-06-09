@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio ETF Manager</title>
+    <!-- Sostituisci il CSS di Bootstrap con un tema Bootswatch -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.0/dist/zephyr/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Aggiungi AnimateCSS per animazioni -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!-- Aggiungi SweetAlert2 per dialoghi -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+<div class="container py-4">
+    <header class="pb-3 mb-4 border-bottom">
+        <div class="d-flex align-items-center justify-content-between">
+            <a href="/" class="d-flex align-items-center text-dark text-decoration-none">
+                <i class="bi bi-bar-chart-line-fill fs-1 me-2 text-primary"></i>
+                <span class="fs-2 fw-bold">Portfolio ETF Manager</span>
+            </a>
+            <div>
+                <button id="themeToggle" class="btn btn-outline-primary">
+                    <i class="bi bi-moon-stars"></i> Modalità scura
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <%- body %>
+    </main>
+
+    <footer class="pt-3 mt-4 text-muted border-top text-center">
+        &copy; 2025 Portfolio ETF Manager
+    </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
+</body>
+</html>
