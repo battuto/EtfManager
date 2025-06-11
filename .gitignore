@@ -62,10 +62,11 @@ jspm_packages/
 ehthumbs.db
 Thumbs.db
 
-# Database files (se non vuoi includere il database)
-# *.db
-# *.db-shm
-# *.db-wal
+# Database files - Contains personal investment data
+data/
+*.db
+*.db-shm
+*.db-wal
 
 # Temporary files
 *.tmp
