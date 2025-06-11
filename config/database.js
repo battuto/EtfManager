@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Database Configuration Module
+ * Manages SQLite database connections, initialization, and optimization
+ * with performance tuning, error handling, and transaction support
+ */
+
 import sqlite3 from 'sqlite3';
 import path from 'path';
 import fs from 'fs';
@@ -8,20 +14,23 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const DB_PATH = path.join(__dirname, '../data/portfolio.db');
 
-// Pool di connessioni per ottimizzare le prestazioni
+// Connection pool for performance optimization
 let _db = null;
 let isInitializing = false;
 let initPromise = null;
 
-// Configurazione SQLite per prestazioni migliori
+// SQLite configuration for better performance
 const SQLITE_CONFIG = {
-    busyTimeout: 10000,         // 10 secondi di timeout per query in conflitto
-    journalMode: 'WAL',         // Write-Ahead Logging per migliorare concorrenza
-    synchronous: 'NORMAL',      // Bilancia sicurezza e prestazioni
-    caseSensitiveLike: false    // Per ricerche case-insensitive più efficienti
+    busyTimeout: 10000,         // 10 seconds timeout for conflicting queries
+    journalMode: 'WAL',         // Write-Ahead Logging for improved concurrency
+    synchronous: 'NORMAL',      // Balance safety and performance
+    caseSensitiveLike: false    // For more efficient case-insensitive searches
 };
 
-// Assicura che la directory per il database esista
+/**
+ * Ensure database directory exists
+ * @param {string} filePath - File path to check
+ */
 function ensureDirectoryExistence(filePath) {
     const dirname = path.dirname(filePath);
     if (fs.existsSync(dirname)) return true;
@@ -29,76 +38,86 @@ function ensureDirectoryExistence(filePath) {
     fs.mkdirSync(dirname);
 }
 
-// Configura il database con parametri ottimali
+/**
+ * Configure database with optimal parameters
+ * @param {Object} db - SQLite database instance
+ * @returns {Promise<void>}
+ */
 function configureDatabase(db) {
     return new Promise((resolve, reject) => {
         db.serialize(() => {
-            // Imposta timeout per query che trovano il database occupato
-            // Set busy timeout without parameter binding (parameters not supported in PRAGMA)
+            // Set busy timeout for queries that find database busy
             db.run(`PRAGMA busy_timeout = ${SQLITE_CONFIG.busyTimeout}`);
 
-            // Imposta modalità journal per concorrenza
+            // Set journal mode for concurrency
             db.run(`PRAGMA journal_mode = ${SQLITE_CONFIG.journalMode}`, [], function(err) {
-                if (err) console.warn('Errore impostazione journal_mode:', err.message);
+                if (err) console.warn('⚠️ Error setting journal_mode:', err.message);
             });
 
-            // Imposta livello di sincronizzazione
+            // Set synchronization level
             db.run(`PRAGMA synchronous = ${SQLITE_CONFIG.synchronous}`, [], function(err) {
-                if (err) console.warn('Errore impostazione synchronous:', err.message);
+                if (err) console.warn('⚠️ Error setting synchronous:', err.message);
             });
 
-            // Imposta modalità case sensitive per LIKE
+            // Set case sensitive mode for LIKE
             db.run(`PRAGMA case_sensitive_like = ${SQLITE_CONFIG.caseSensitiveLike ? 1 : 0}`, [], function(err) {
-                if (err) console.warn('Errore impostazione case_sensitive_like:', err.message);
+                if (err) console.warn('⚠️ Error setting case_sensitive_like:', err.message);
                 resolve();
             });
         });
     });
 }
 
-// Gestisce la connessione al database come singleton con configurazione ottimizzata
+/**
+ * Get database instance as singleton with optimized configuration
+ * @returns {Object} SQLite database instance
+ */
 export function getDb() {
     if (!_db) {
-        console.log('Creazione nuova connessione al database');
+        console.log('🔗 Creating new database connection');
         ensureDirectoryExistence(DB_PATH);
 
         _db = new sqlite3.Database(DB_PATH, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
             if (err) {
-                console.error(`Errore connessione database: ${err.message}`);
+                console.error(`❌ Database connection error: ${err.message}`);
                 _db = null;
                 throw err;
             }
-            console.log('Connessione al database stabilita');
+            console.log('✅ Database connection established');
 
-            // Configura database in background
+            // Configure database in background
             configureDatabase(_db).catch(err => {
-                console.error('Errore configurazione database:', err);
+                console.error('❌ Database configuration error:', err);
             });
         });
     }
     return _db;
 }
 
-// Funzione helper per esecuzione sicura di query con gestione ottimizzata degli errori
+/**
+ * Helper function for safe query execution with optimized error handling
+ * @param {string} operation - SQLite operation (run, get, all)
+ * @returns {Function} Query execution function
+ */
 function safeExecute(operation) {
     return function(sql, params = []) {
         return new Promise((resolve, reject) => {
             try {
                 const db = getDb();
-                const startTime = Date.now(); // Per tracciare performance
+                const startTime = Date.now(); // For performance tracking
 
                 db[operation](sql, params, function(err, result) {
                     const queryTime = Date.now() - startTime;
 
-                    // Log per query lente (utile per debug)
+                    // Log slow queries (useful for debugging)
                     if (queryTime > 500) { // 500ms threshold
-                        console.warn(`Query lenta (${queryTime}ms): ${sql.substring(0, 100)}...`);
+                        console.warn(`🐌 Slow query (${queryTime}ms): ${sql.substring(0, 100)}...`);
                     }
 
                     if (err) {
                         if (err.code === 'SQLITE_MISUSE' || err.code === 'SQLITE_BUSY') {
-                            console.warn(`Errore database ${err.code}, riprovo...`);
-                            // Rigenera connessione e riprova
+                            console.warn(`⚠️ Database error ${err.code}, retrying...`);
+                            // Regenerate connection and retry
                             _db = null;
                             const newDb = getDb();
                             newDb[operation](sql, params, function(retryErr, retryResult) {
@@ -120,21 +139,24 @@ function safeExecute(operation) {
                     }
                 });
             } catch (error) {
-                console.error('Errore esecuzione query:', error);
+                console.error('❌ Query execution error:', error);
                 reject(error);
             }
         });
     };
 }
 
-// Inizializza il database con una sola istanza alla volta (pattern singleton)
+/**
+ * Initialize database with singleton pattern
+ * @returns {Promise<boolean>} Success status
+ */
 export async function initDb() {
-    // Se è già in corso un'inizializzazione, ritorna quella promessa
+    // If initialization is already in progress, return that promise
     if (isInitializing) {
         return initPromise;
     }
 
-    // Imposta il flag e crea una nuova promessa di inizializzazione
+    // Set flag and create new initialization promise
     isInitializing = true;
     initPromise = new Promise(async (resolve, reject) => {
         try {
@@ -144,11 +166,11 @@ export async function initDb() {
             const db = getDb();
 
             if (!dbExists) {
-                console.log('Creazione schema database...');
+                console.log('📊 Creating database schema...');
 
                 await new Promise((resolveSchema, rejectSchema) => {
                     db.serialize(() => {
-                        // Tabella portfolios
+                        // Portfolios table
                         db.run(`CREATE TABLE IF NOT EXISTS portfolios (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
                             name TEXT NOT NULL,
@@ -158,14 +180,14 @@ export async function initDb() {
                             if (err) rejectSchema(err);
                         });
 
-                        // Portfolio predefinito
+                        // Default portfolio
                         db.run(`INSERT INTO portfolios (name, description) VALUES (?, ?)`,
-                            ['Portfolio Principale', 'Il mio portfolio ETF principale'],
+                            ['Main Portfolio', 'My main ETF portfolio'],
                             (err) => {
                                 if (err) rejectSchema(err);
                             });
 
-                        // Tabella investments con indici ottimizzati
+                        // Investments table with optimized indexes
                         db.run(`CREATE TABLE IF NOT EXISTS investments (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
                             portfolio_id INTEGER NOT NULL DEFAULT 1,
@@ -177,12 +199,12 @@ export async function initDb() {
                         )`, (err) => {
                             if (err) rejectSchema(err);
                             else {
-                                // Crea indici per ottimizzare le query frequenti
+                                // Create indexes to optimize frequent queries
                                 db.run('CREATE INDEX IF NOT EXISTS idx_investments_ticker ON investments(ticker)', (err) => {
-                                    if (err) console.warn('Errore creazione indice ticker:', err);
+                                    if (err) console.warn('⚠️ Error creating ticker index:', err);
                                 });
                                 db.run('CREATE INDEX IF NOT EXISTS idx_investments_portfolio ON investments(portfolio_id)', (err) => {
-                                    if (err) console.warn('Errore creazione indice portfolio_id:', err);
+                                    if (err) console.warn('⚠️ Error creating portfolio_id index:', err);
                                     else resolveSchema();
                                 });
                             }
@@ -190,10 +212,10 @@ export async function initDb() {
                     });
                 });
 
-                console.log('Database creato con successo!');
+                console.log('✅ Database created successfully!');
             }
 
-            // Verifica connessione valida
+            // Verify valid connection
             await new Promise((resolve, reject) => {
                 db.get('SELECT 1', (err, result) => {
                     if (err) reject(err);
@@ -201,14 +223,14 @@ export async function initDb() {
                 });
             });
 
-            // Inizializza tabella ISIN
+            // Initialize ISIN table
             await initIsinTable();
 
-            // Inizializzazione completata
+            // Initialization completed
             isInitializing = false;
             resolve(true);
         } catch (error) {
-            console.error(`Errore inizializzazione database: ${error.message}`);
+            console.error(`❌ Database initialization error: ${error.message}`);
             isInitializing = false;
             reject(error);
         }
@@ -217,12 +239,16 @@ export async function initDb() {
     return initPromise;
 }
 
-// Funzioni helper per query ottimizzate
+// Optimized query helper functions
 export const runQuery = safeExecute('run');
 export const getAll = safeExecute('all');
 export const get = safeExecute('get');
 
-// Funzione per eseguire query multiple in una singola transazione
+/**
+ * Execute multiple queries in a single transaction
+ * @param {Array} queries - Array of query objects with sql and params
+ * @returns {Promise<Array>} Array of results
+ */
 export async function runTransaction(queries) {
     const db = getDb();
 
@@ -265,7 +291,10 @@ export async function runTransaction(queries) {
     });
 }
 
-// Chiusura del database - solo quando l'app termina
+/**
+ * Close database connection - only when app terminates
+ * @returns {Promise<void>}
+ */
 export function closeDb() {
     return new Promise((resolve, reject) => {
         if (_db) {
@@ -273,7 +302,7 @@ export function closeDb() {
                 if (err) reject(err);
                 else {
                     _db = null;
-                    console.log('Connessione al database chiusa');
+                    console.log('🔌 Database connection closed');
                     resolve();
                 }
             });
@@ -283,38 +312,41 @@ export function closeDb() {
     });
 }
 
-// Gestione chiusura applicazione
+// Handle application shutdown
 process.on('SIGINT', async () => {
-    console.log('Chiusura applicazione, disconnessione database...');
+    console.log('🛑 Application shutdown, disconnecting database...');
     try {
         await closeDb();
         process.exit(0);
     } catch (err) {
-        console.error('Errore chiusura database:', err);
+        console.error('❌ Database closure error:', err);
         process.exit(1);
     }
 });
 
-// Diagnosi e ottimizzazione
+/**
+ * Database diagnostics and optimization
+ * @returns {Promise<void>}
+ */
 export async function optimizeDatabase() {
     const db = getDb();
 
     return new Promise((resolve, reject) => {
         db.serialize(() => {
-            console.log('Avvio ottimizzazione database...');
+            console.log('⚡ Starting database optimization...');
 
-            // Analisi del database
+            // Database analysis
             db.run('ANALYZE', err => {
-                if (err) console.warn('Errore durante ANALYZE:', err);
+                if (err) console.warn('⚠️ Error during ANALYZE:', err);
             });
 
-            // Ottimizzazione
+            // Optimization
             db.run('VACUUM', err => {
                 if (err) {
-                    console.error('Errore durante VACUUM:', err);
+                    console.error('❌ Error during VACUUM:', err);
                     reject(err);
                 } else {
-                    console.log('Database ottimizzato con successo');
+                    console.log('✅ Database optimized successfully');
                     resolve();
                 }
             });

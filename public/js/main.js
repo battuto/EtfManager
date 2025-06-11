@@ -1,20 +1,28 @@
+/**
+ * @fileoverview Main JavaScript Application
+ * Handles ETF Portfolio Manager frontend functionality including UI interactions,
+ * data visualization, and investment management operations
+ */
+
 document.addEventListener('DOMContentLoaded', function () {
-    // Inizializzazione
+    // Application initialization
     initializeDatePickers();
     initializeTooltips();
     initializeThemeToggle();
     initializeTableActions();
 
-    // Caricamento asincrono dei grafici
+    // Asynchronous chart loading
     if (document.getElementById('compositionChart')) {
         loadAnalyticsCharts();
     }
 
-    // Event listeners per il form di aggiunta investimento
+    // Investment form event listeners
     setupInvestmentForm();
 });
 
-// Inizializza i date picker
+/**
+ * Initialize date picker inputs with default current date
+ */
 function initializeDatePickers() {
     const dateInputs = document.querySelectorAll('input[type="date"]');
     dateInputs.forEach(input => {
@@ -24,7 +32,9 @@ function initializeDatePickers() {
     });
 }
 
-// Inizializza i tooltip Bootstrap
+/**
+ * Initialize Bootstrap tooltips with custom delay
+ */
 function initializeTooltips() {
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -34,31 +44,33 @@ function initializeTooltips() {
     });
 }
 
-// Gestione tema chiaro/scuro
+/**
+ * Manage light/dark theme toggle functionality
+ */
 function initializeThemeToggle() {
     const themeToggle = document.getElementById('themeToggle');
     if (themeToggle) {
-        // Applica tema salvato
+        // Apply saved theme
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme === 'dark') {
             document.body.classList.add('dark-mode');
-            themeToggle.innerHTML = '<i class="bi bi-sun"></i> Modalità chiara';
+            themeToggle.innerHTML = '<i class="bi bi-sun"></i> Light Mode';
         }
 
-        // Gestisci click sul pulsante del tema
+        // Handle theme toggle click
         themeToggle.addEventListener('click', function () {
             document.body.classList.toggle('dark-mode');
             const isDarkMode = document.body.classList.contains('dark-mode');
 
             if (isDarkMode) {
-                this.innerHTML = '<i class="bi bi-sun"></i> Modalità chiara';
+                this.innerHTML = '<i class="bi bi-sun"></i> Light Mode';
                 localStorage.setItem('theme', 'dark');
             } else {
-                this.innerHTML = '<i class="bi bi-moon-stars"></i> Modalità scura';
+                this.innerHTML = '<i class="bi bi-moon-stars"></i> Dark Mode';
                 localStorage.setItem('theme', 'light');
             }
 
-            // Aggiorna grafici per adattarli al tema
+            // Update charts to adapt to theme
             if (window.portfolioCharts) {
                 setTimeout(() => {
                     if (window.compositionChart) window.compositionChart.update();
@@ -71,7 +83,9 @@ function initializeThemeToggle() {
     }
 }
 
-// Inizializza le azioni per la tabella degli investimenti
+/**
+ * Initialize table actions and interactions
+ */
 function initializeTableActions() {
     // Portfolio selector
     const portfolioSelector = document.getElementById('portfolioSelect');
@@ -81,16 +95,16 @@ function initializeTableActions() {
         });
     }
 
-    // Gestione espansione cronologia acquisti
+    // Setup various table functionalities
     setupHistoryToggle();
-
-    // Setup CRUD operations
     setupEditButtons();
     setupDeleteButtons();
     setupMoveButtons();
 }
 
-// Gestione espansione cronologia acquisti
+/**
+ * Setup purchase history toggle functionality
+ */
 function setupHistoryToggle() {
     document.querySelectorAll('.toggle-history').forEach(btn => {
         btn.addEventListener('click', async function (e) {
@@ -99,11 +113,11 @@ function setupHistoryToggle() {
             const ticker = row.dataset.ticker;
             const icon = this.querySelector('i');
 
-            // Alterna icona
+            // Toggle icon
             if (icon.classList.contains('bi-chevron-down')) {
                 icon.classList.replace('bi-chevron-down', 'bi-chevron-up');
 
-                // Mostra indicatore di caricamento
+                // Show loading indicator
                 const loadingRow = document.createElement('tr');
                 loadingRow.className = 'loading-row';
                 loadingRow.innerHTML = `
@@ -111,12 +125,12 @@ function setupHistoryToggle() {
                     <div class="spinner-border spinner-border-sm text-primary" role="status">
                         <span class="visually-hidden">Loading...</span>
                     </div>
-                    <span class="ms-2">Caricamento dettagli...</span>
+                    <span class="ms-2">Loading details...</span>
                 </td>
             `;
                 row.parentNode.insertBefore(loadingRow, row.nextSibling);
 
-                // Carica dati con exponential backoff per gestire errori
+                // Load data with exponential backoff for error handling
                 let retries = 3;
                 let delay = 1000;
 
@@ -126,28 +140,26 @@ function setupHistoryToggle() {
                         const response = await fetch(`/investments/history/${portfolioId}/${ticker}`);
 
                         if (!response.ok) {
-                            throw new Error(`Errore HTTP: ${response.status}`);
+                            throw new Error(`HTTP Error: ${response.status}`);
                         }
 
                         const data = await response.json();
 
-                        // Rimuovi riga di caricamento
-                        loadingRow.remove();
-
-                        if (data.success && data.history.length > 0) {
-                            // Crea riga per la cronologia
+                        // Remove loading row
+                        loadingRow.remove();                        if (data.success && data.history.length > 0) {
+                            // Create history row
                             const historyRow = document.createElement('tr');
                             historyRow.className = 'history-row purchase-details-row';
                             historyRow.innerHTML = createHistoryRowHTML(data.history, ticker);
 
-                            // Inserisci dopo la riga corrente
+                            // Insert after current row
                             row.parentNode.insertBefore(historyRow, row.nextSibling);
                         } else {
-                            // Nessun dato disponibile
-                            showNoDataRow(row, 'Nessun dettaglio disponibile per questo ETF');
+                            // No data available
+                            showNoDataRow(row, 'No details available for this ETF');
                         }
                     } catch (error) {
-                        console.error('Errore nel caricamento della cronologia:', error);
+                        console.error('📊 Error loading history:', error);
 
                         if (retries > 0) {
                             retries--;
@@ -156,9 +168,9 @@ function setupHistoryToggle() {
                             return fetchHistory();
                         }
 
-                        // Rimuovi riga di caricamento e mostra errore
+                        // Remove loading row and show error
                         loadingRow.remove();
-                        showNoDataRow(row, 'Errore nel caricamento dei dati', true);
+                        showNoDataRow(row, 'Error loading data', true);
                     }
                 };
 
@@ -166,7 +178,7 @@ function setupHistoryToggle() {
             } else {
                 icon.classList.replace('bi-chevron-up', 'bi-chevron-down');
 
-                // Rimuovi tutte le righe della cronologia
+                // Remove all history rows
                 const nextRow = row.nextElementSibling;
                 if (nextRow && (nextRow.classList.contains('history-row') || nextRow.classList.contains('loading-row'))) {
                     nextRow.remove();
@@ -176,34 +188,29 @@ function setupHistoryToggle() {
     });
 }
 
-// Crea HTML per la riga della cronologia
+/**
+ * Create HTML for history row display
+ * @param {Array} history - Array of historical data
+ * @param {string} ticker - ETF ticker symbol
+ * @returns {string} HTML string for the history row
+ */
 function createHistoryRowHTML(history, ticker) {
     return `
-        <td colspan="9">
-            <div class="p-3">
-                <div class="d-flex justify-content-between mb-2">
-                    <div>
-                        <h6 class="mb-0">Riepilogo acquisti di ${ticker}</h6>
-                        <span class="badge bg-info text-white">${history.length} transazioni</span>
-                    </div>
-                    <div class="d-none d-md-block">
-                        <button class="btn btn-sm btn-outline-primary export-history-btn" data-ticker="${ticker}">
-                            <i class="bi bi-download"></i> Esporta
-                        </button>
-                    </div>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-sm purchase-details-table">
+        <td colspan="9" class="p-0">
+            <div class="bg-light border-top">
+                <div class="p-3">
+                    <h6 class="mb-3">Purchase Details for ${ticker}</h6>
+                    <table class="table table-sm mb-0">
                         <thead>
                             <tr>
-                                <th>Data</th>
-                                <th>Quote</th>
-                                <th>Prezzo acquisto</th>
-                                <th>Valore investito</th>
-                                <th>Prezzo attuale</th>
-                                <th>Valore attuale</th>
-                                <th>Variazione</th>
-                                <th>Discostamento</th>
+                                <th>Purchase Date</th>
+                                <th>Shares</th>
+                                <th>Purchase Price</th>
+                                <th>Invested Value</th>
+                                <th>Current Price</th>
+                                <th>Current Value</th>
+                                <th>Variation</th>
+                                <th>Deviation</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -233,7 +240,12 @@ function createHistoryRowHTML(history, ticker) {
     `;
 }
 
-// Mostra riga "nessun dato"
+/**
+ * Show "no data" row for empty results
+ * @param {HTMLElement} row - Table row element
+ * @param {string} message - Message to display
+ * @param {boolean} isError - Whether this is an error state
+ */
 function showNoDataRow(row, message, isError = false) {
     const noDataRow = document.createElement('tr');
     noDataRow.className = 'history-row bg-light';
@@ -246,7 +258,9 @@ function showNoDataRow(row, message, isError = false) {
     row.parentNode.insertBefore(noDataRow, row.nextSibling);
 }
 
-// Setup pulsanti di modifica
+/**
+ * Setup edit buttons for investment modifications
+ */
 function setupEditButtons() {
     document.querySelectorAll('.edit-btn').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -297,7 +311,7 @@ function setupEditButtons() {
                 if (result.isConfirmed) {
                     showLoadingOverlay();
 
-                    fetch(`/investments/${id}`, {
+                    fetch('/investments/' + id, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(result.value)
@@ -322,7 +336,9 @@ function setupEditButtons() {
     });
 }
 
-// Setup pulsanti di eliminazione
+/**
+ * Setup delete buttons for investment removal
+ */
 function setupDeleteButtons() {
     document.querySelectorAll('.delete-btn').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -332,7 +348,7 @@ function setupDeleteButtons() {
 
             Swal.fire({
                 title: 'Conferma eliminazione',
-                text: `Sei sicuro di voler eliminare ${ticker} dal portfolio?`,
+                text: 'Sei sicuro di voler eliminare ' + ticker + ' dal portfolio?',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Elimina',
@@ -342,7 +358,7 @@ function setupDeleteButtons() {
                 if (result.isConfirmed) {
                     showLoadingOverlay();
 
-                    fetch(`/investments/${id}`, { method: 'DELETE' })
+                    fetch('/investments/' + id, { method: 'DELETE' })
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
@@ -363,7 +379,9 @@ function setupDeleteButtons() {
     });
 }
 
-// Setup pulsanti di spostamento
+/**
+ * Setup move buttons for portfolio transfers
+ */
 function setupMoveButtons() {
     document.querySelectorAll('.move-btn').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -407,11 +425,16 @@ function setupMoveButtons() {
     });
 }
 
-// Mostra dialog spostamento
+/**
+ * Show move dialog for investment transfer
+ * @param {Array} portfolios - Available portfolios
+ * @param {number} investmentId - Investment ID to move
+ * @param {string} ticker - ETF ticker symbol
+ */
 function showMoveDialog(portfolios, investmentId, ticker) {
     let options = '';
     portfolios.forEach(p => {
-        options += `<option value="${p.id}">${p.name}</option>`;
+        options += '<option value="' + p.id + '">' + p.name + '</option>';
     });
 
     Swal.fire({
@@ -453,7 +476,9 @@ function showMoveDialog(portfolios, investmentId, ticker) {
     });
 }
 
-// Setup form aggiunta investimento
+/**
+ * Setup investment form for new additions
+ */
 function setupInvestmentForm() {
     const form = document.getElementById('addInvestmentForm');
     if (form) {
@@ -477,7 +502,9 @@ function setupInvestmentForm() {
     }
 }
 
-// Carica grafici analitici in modo asincrono
+/**
+ * Load analytics charts asynchronously
+ */
 function loadAnalyticsCharts() {
     const portfolioId = document.getElementById('portfolioSelect')?.value || 1;
 
@@ -496,7 +523,10 @@ function loadAnalyticsCharts() {
     loadPortfolioMetrics(portfolioId);
 }
 
-// Carica dati storici
+/**
+ * Load historical data for timeline chart
+ * @param {number} portfolioId - Portfolio ID
+ */
 function loadHistoricalData(portfolioId) {
     const timelineContainer = document.getElementById('timelineChart')?.closest('.card-body');
     if (timelineContainer) {
@@ -504,7 +534,7 @@ function loadHistoricalData(portfolioId) {
         timelineContainer.classList.add('loading');
         timelineContainer.insertAdjacentHTML('beforeend', '<div class="chart-loading-indicator"><div class="spinner-border text-primary" role="status"></div></div>');
 
-        fetch(`/analytics/historical/${portfolioId}?days=30`)
+        fetch('/analytics/historical/' + portfolioId + '?days=30')
             .then(response => response.json())
             .then(data => {
                 timelineContainer.classList.remove('loading');
@@ -522,7 +552,10 @@ function loadHistoricalData(portfolioId) {
     }
 }
 
-// Carica metriche avanzate
+/**
+ * Load portfolio metrics for allocation chart
+ * @param {number} portfolioId - Portfolio ID
+ */
 function loadPortfolioMetrics(portfolioId) {
     const metricsContainer = document.getElementById('allocationChart')?.closest('.card-body');
     if (metricsContainer) {
@@ -530,7 +563,7 @@ function loadPortfolioMetrics(portfolioId) {
         metricsContainer.classList.add('loading');
         metricsContainer.insertAdjacentHTML('beforeend', '<div class="chart-loading-indicator"><div class="spinner-border text-primary" role="status"></div></div>');
 
-        fetch(`/analytics/metrics/${portfolioId}`)
+        fetch('/analytics/metrics/' + portfolioId)
             .then(response => response.json())
             .then(data => {
                 metricsContainer.classList.remove('loading');
@@ -551,11 +584,14 @@ function loadPortfolioMetrics(portfolioId) {
     }
 }
 
-// Aggiorna indicatori delle metriche
+/**
+ * Update metrics indicators display
+ * @param {Object} analytics - Analytics data
+ */
 function updateMetricsIndicators(analytics) {
     const diversificationIndicator = document.getElementById('diversificationIndicator');
     if (diversificationIndicator) {
-        diversificationIndicator.textContent = `${analytics.metrics.diversification.toFixed(0)}%`;
+        diversificationIndicator.textContent = analytics.metrics.diversification.toFixed(0) + '%';
 
         // Imposta colore in base al valore
         if (analytics.metrics.diversification > 75) {
@@ -568,7 +604,10 @@ function updateMetricsIndicators(analytics) {
     }
 }
 
-// Overlay di caricamento
+/**
+ * Show loading overlay with optional message
+ * @param {string} message - Loading message to display
+ */
 function showLoadingOverlay(message = 'Caricamento...') {
     let overlay = document.getElementById('loadingOverlay');
     if (!overlay) {
@@ -587,6 +626,9 @@ function showLoadingOverlay(message = 'Caricamento...') {
     }
 }
 
+/**
+ * Hide loading overlay
+ */
 function hideLoadingOverlay() {
     const overlay = document.getElementById('loadingOverlay');
     if (overlay) {

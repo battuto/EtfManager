@@ -1,8 +1,14 @@
+/**
+ * @fileoverview Price Utilities Module
+ * Handles ETF price fetching, ISIN mapping, and historical data retrieval
+ * with caching, retry mechanisms, and error handling
+ */
+
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import {getDb} from '../config/database.js';
 
-// Mapping comuni ISIN (ottimizzato)
+// Common ISIN mappings (optimized)
 const commonIsinMap = {
     'VWCE'  : 'IE00BK5BQT80',
     'SWDA'  : 'IE00B4L5Y983',
@@ -18,16 +24,22 @@ const commonIsinMap = {
     'FWRA'  : 'IE000716YHJ7'
 };
 
-// Configurazione HTTP con timeout e retry
+// HTTP configuration with timeout and retry
 const HTTP_CONFIG = {
-    timeout: 10000, // 10 secondi
+    timeout: 10000, // 10 seconds
     headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
     },
-    retry: 2 // Numero massimo di tentativi
+    retry: 2 // Maximum retry attempts
 };
 
-// Utility per richieste HTTP con retry
+/**
+ * HTTP utility with retry mechanism
+ * @param {string} url - URL to fetch
+ * @param {Object} config - Axios configuration
+ * @param {number} retries - Number of retry attempts
+ * @returns {Promise<Object>} Axios response
+ */
 async function fetchWithRetry(url, config = {}, retries = HTTP_CONFIG.retry) {
     try {
         return await axios({
@@ -38,7 +50,7 @@ async function fetchWithRetry(url, config = {}, retries = HTTP_CONFIG.retry) {
         });
     } catch (error) {
         if (retries > 0 && (error.code === 'ECONNABORTED' || error.response?.status >= 500)) {
-            console.warn(`Riprovo richiesta a ${url}, tentativi rimanenti: ${retries-1}`);
+            console.warn(`💫 Retrying request to ${url}, attempts remaining: ${retries-1}`);
             return fetchWithRetry(url, config, retries - 1);
         }
         throw error;
@@ -46,46 +58,54 @@ async function fetchWithRetry(url, config = {}, retries = HTTP_CONFIG.retry) {
 }
 
 /**
- * Inizializza la tabella ISIN nel database
+ * Initialize ISIN table in database
+ * @returns {Promise<void>}
  */
 export function initIsinTable() {
     return new Promise((resolve, reject) => {
         try {
             const db = getDb();
-            // Modifica la query per evitare problemi di sintassi
+            // Modified query to avoid syntax issues
             const createTableSQL = "CREATE TABLE IF NOT EXISTS isin_mapping (ticker TEXT PRIMARY KEY, isin TEXT NOT NULL, updated_at INTEGER NOT NULL)";
 
             db.run(createTableSQL, function(err) {
                 if (err) {
-                    console.error('Errore nella creazione della tabella isin_mapping:', err);
+                    console.error('❌ Error creating isin_mapping table:', err);
                     reject(err);
                 } else {
                     resolve();
                 }
             });
         } catch (error) {
-            console.error('Errore durante initIsinTable:', error);
-            // Risolvi comunque la promessa per non bloccare l'inizializzazione
+            console.error('❌ Error during initIsinTable:', error);
+            // Resolve anyway to not block initialization
             resolve();
         }
     });
 }
 
 /**
- * Recupera l'ISIN di un ticker con sistema di cache multi-livello
+ * Retrieve ISIN for a ticker with multi-level cache system
+ * @param {string} ticker - ETF ticker symbol
+ * @returns {Promise<string|null>} ISIN code or null
  */
 export async function findIsin(ticker) {
     if (!ticker) return null;
 
     ticker = ticker.toUpperCase().trim();
 
-    // 1. Controlla nella mappatura statica (memoria)
+    // 1. Check static mapping (memory)
     if (commonIsinMap[ticker]) {
         return commonIsinMap[ticker];
     }
+
+    return null; // Could be extended with database cache and API lookup
 }
+
 /**
- * Recupera il prezzo attuale di un ETF con cache
+ * Fetch current price of an ETF with caching
+ * @param {string} ticker - ETF ticker symbol
+ * @returns {Promise<number|null>} Current price or null
  */
 export async function fetchCurrentPrice(ticker) {
     if (!ticker) return null;
@@ -93,15 +113,14 @@ export async function fetchCurrentPrice(ticker) {
     const normalizedTicker = ticker.toUpperCase().trim();
 
     try {
-
-        // 2. Recupera il prezzo da Google Finance
+        // 2. Fetch price from Google Finance
         const url = `https://www.google.com/finance/quote/${normalizedTicker}:BIT?hl=it`;
         const resp = await fetchWithRetry(url);
         const $ = cheerio.load(resp.data);
         const txt = $('div.YMlKec.fxKbKc').first().text();
 
         if (!txt) {
-            console.warn(`Nessun prezzo trovato per ${normalizedTicker}`);
+            console.warn(`⚠️ No price found for ${normalizedTicker}`);
             return null;
         }
 
@@ -109,25 +128,28 @@ export async function fetchCurrentPrice(ticker) {
         const price = parseFloat(cleaned);
 
         if (isNaN(price)) {
-            console.warn(`Prezzo non valido per ${normalizedTicker}: "${cleaned}"`);
+            console.warn(`⚠️ Invalid price for ${normalizedTicker}: "${cleaned}"`);
             return null;
         }
 
-        return price
+        return price;
     } catch (err) {
-        console.error(`Errore nel recupero prezzo per ${normalizedTicker}:`, err.message);
+        console.error(`📉 Error fetching price for ${normalizedTicker}:`, err.message);
         return null;
     }
 }
 
 /**
- * Recupera dati storici di un ETF con cache
+ * Fetch historical data for an ETF with caching
+ * @param {string} ticker - ETF ticker symbol
+ * @param {number} days - Number of days of historical data (default: 30)
+ * @returns {Promise<Object|null>} Historical data object with dates and values arrays
  */
 export async function fetchHistoricalData(ticker, days = 30) {
     if (!ticker) return null;
 
     try {
-        // 2. Prepara le date
+        // 2. Prepare dates
         const today = new Date();
         const pastDate = new Date();
         pastDate.setDate(today.getDate() - days);
@@ -135,15 +157,15 @@ export async function fetchHistoricalData(ticker, days = 30) {
         const dateFrom = pastDate.toISOString().split('T')[0];
         const dateTo = today.toISOString().split('T')[0];
 
-        // 3. Ottieni ISIN se necessario
+        // 3. Get ISIN if necessary
         const isin = ticker.length === 12 ? ticker : await findIsin(ticker);
 
         if (!isin) {
-            console.error(`Impossibile trovare l'ISIN per ${ticker}`);
+            console.error(`❌ Unable to find ISIN for ${ticker}`);
             return null;
         }
 
-        // 4. Richiedi dati storici
+        // 4. Request historical data
         try {
             const response = await fetchWithRetry(
                 `https://www.justetf.com/api/etfs/${isin}/performance-chart`,
@@ -160,24 +182,25 @@ export async function fetchHistoricalData(ticker, days = 30) {
                     }
                 }
             );
+            
             if (response?.data?.series && response.data.series.length > 0) {
-                // 5. Estrai date e valori
+                // 5. Extract dates and values
                 const dates = response.data.series.map(item => {
                     const parts = item.date.split('-');
-                    return `${parts[2]}/${parts[1]}/${parts[0]}`; // Converti in formato dd/mm/yyyy
+                    return `${parts[2]}/${parts[1]}/${parts[0]}`; // Convert to dd/mm/yyyy format
                 });
                 const values = response.data.series.map(item => item.value.raw);
-                return {dates, values}
+                return { dates, values };
             }
 
-            console.warn(`Risposta JustETF per ${ticker} non contiene dati nella serie`);
+            console.warn(`⚠️ JustETF response for ${ticker} contains no data in series`);
             return null;
         } catch (error) {
-            console.error(`Errore nella richiesta a JustETF per ${ticker} (ISIN: ${isin}):`, error.message);
+            console.error(`📈 Error in JustETF request for ${ticker} (ISIN: ${isin}):`, error.message);
             return null;
         }
     } catch (error) {
-        console.error(`Errore generale in fetchHistoricalData per ${ticker}:`, error.message);
+        console.error(`❌ General error in fetchHistoricalData for ${ticker}:`, error.message);
         return null;
     }
 }

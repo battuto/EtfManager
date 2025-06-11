@@ -1,19 +1,25 @@
+/**
+ * @fileoverview Portfolio Charts Module
+ * Handles creation and management of portfolio data visualization charts
+ * using Chart.js library for composition, performance, and allocation charts
+ */
+
 class PortfolioCharts {
     constructor(investmentsData) {
-        // Verifica che Chart.js sia disponibile
+        // Verify Chart.js availability
         if (typeof Chart === 'undefined') {
-            console.error('Chart.js non è disponibile');
-            throw new Error('Chart.js non è disponibile');
+            console.error('❌ Chart.js is not available');
+            throw new Error('Chart.js is not available');
         }
 
         this.investmentsData = investmentsData || [];
 
-        // Verifica che ci siano dati validi
+        // Verify valid data exists
         if (!Array.isArray(this.investmentsData) || this.investmentsData.length === 0) {
-            console.warn('Nessun dato di investimento disponibile per i grafici');
+            console.warn('⚠️ No investment data available for charts');
         }
 
-        // Palette di colori ottimizzata per accessibilità e leggibilità
+        // Optimized color palette for accessibility and readability
         this.colors = [
             'rgba(78, 115, 223, 0.8)',
             'rgba(28, 200, 138, 0.8)',
@@ -28,7 +34,7 @@ class PortfolioCharts {
         ];
         this.borderColors = this.colors.map(color => color.replace('0.8', '1'));
 
-        // Configurazioni condivise per i grafici
+        // Shared chart configurations
         this.sharedOptions = {
             responsive: true,
             maintainAspectRatio: false,

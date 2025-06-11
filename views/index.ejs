@@ -61,18 +61,123 @@
                         <div class="card shadow-sm border-0">
                             <div class="card-body">
                                 <canvas id="timelineChart" height="200"></canvas>
-                                <!-- Period selector for timeline chart -->
-                                <div class="mt-2 text-center">
+                                <!-- Period selector for timeline chart -->                                <div class="mt-2 text-center">
                                     <div class="btn-group" role="group" id="timelinePeriodButtons">
                                         <button type="button" class="btn btn-sm btn-outline-secondary active" data-days="7">7g</button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary" data-days="30">30g</button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary" data-days="90">90g</button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary" data-days="365">1a</button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary" data-days="ytd">YTD</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" data-days="max">MAX</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alert Management Section -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-lg border-0 animate__animated animate__fadeIn">
+            <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-bell me-2"></i>Sistema di Alert
+                </h5>
+                <div>
+                    <button id="addAlertBtn" class="btn btn-sm btn-dark">
+                        <i class="bi bi-plus-circle"></i> Nuovo Alert
+                    </button>
+                    <button id="checkAlertsBtn" class="btn btn-sm btn-outline-dark">
+                        <i class="bi bi-check-circle"></i> Controlla Alert
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="alertsContainer">
+                    <div id="alertsLoading" class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Caricamento alert...</span>
+                        </div>
+                    </div>
+                    <div id="alertsList" style="display: none;">
+                        <!-- Gli alert verranno caricati qui dinamicamente -->
+                    </div>
+                    <div id="noAlerts" style="display: none;" class="text-center text-muted">
+                        <i class="bi bi-bell-slash display-4"></i>
+                        <p class="mt-2">Nessun alert configurato per questo portfolio.</p>
+                        <p class="small">Clicca su "Nuovo Alert" per iniziare.</p>
+                    </div>
+                </div>
+            </div>
+        </div>    </div>
+</div>
+
+<!-- Advanced Analytics Section - Medium Priority Feature -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-lg border-0 animate__animated animate__fadeIn">
+            <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-graph-up me-2"></i>Analisi Avanzate
+                </h5>                <div class="btn-group">
+                    <button id="correlationBtn" class="btn btn-sm btn-light" data-bs-toggle="tooltip" 
+                            title="Analizza quanto si muovono insieme i tuoi ETF. Correlazioni alte indicano sovrapposizione">
+                        <i class="bi bi-diagram-3"></i> Correlazioni
+                    </button>
+                    <button id="volatilityBtn" class="btn btn-sm btn-light" data-bs-toggle="tooltip" 
+                            title="Misura il rischio del portfolio attraverso volatilità, Sharpe Ratio e Value at Risk">
+                        <i class="bi bi-activity"></i> Volatilità
+                    </button>
+                    <button id="riskBtn" class="btn btn-sm btn-light" data-bs-toggle="tooltip" 
+                            title="Metriche avanzate che combinano rendimento e rischio (Sharpe, Sortino, Calmar)">
+                        <i class="bi bi-shield-check"></i> Rischio
+                    </button>
+                    <button id="rebalanceBtn" class="btn btn-sm btn-light" data-bs-toggle="tooltip" 
+                            title="Ottieni consigli per riequilibrare il portfolio e ottimizzare l'allocazione">
+                        <i class="bi bi-arrows-move"></i> Ribalancio
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Loading State -->
+                <div id="advancedAnalyticsLoading" class="text-center" style="display: none;">
+                    <div class="spinner-border text-info" role="status">
+                        <span class="visually-hidden">Caricamento analisi...</span>
+                    </div>
+                    <p class="mt-2">Elaborazione analisi avanzate...</p>
+                </div>
+                
+                <!-- Tabs Content -->
+                <div id="advancedAnalyticsContent">
+                    <div class="row">
+                        <div class="col-12">                            <div class="alert alert-info" role="alert">
+                                <i class="bi bi-lightbulb me-2"></i>
+                                <strong>Guida alle Analisi Avanzate del Portfolio:</strong>
+                                <div class="row mt-3">
+                                    <div class="col-md-6">
+                                        <ul class="mb-0">
+                                            <li><strong>📊 Correlazioni:</strong> Scopri quanto si muovono insieme i tuoi ETF. Correlazioni alte (>0.8) indicano sovrapposizione, basse (<0.2) indicano diversificazione.</li>
+                                            <li><strong>📈 Volatilità:</strong> Misura quanto oscillano i prezzi del tuo portfolio. Include Sharpe Ratio, drawdown e Value at Risk per valutare il profilo rischio-rendimento.</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <ul class="mb-0">
+                                            <li><strong>🛡️ Rischio:</strong> Metriche avanzate (Sharpe, Sortino, Calmar) che combinano rendimento e rischio per valutare l'efficienza del tuo portfolio.</li>
+                                            <li><strong>⚖️ Ribalancio:</strong> Consigli personalizzati per ottimizzare l'allocazione e mantenere il portfolio allineato ai tuoi obiettivi.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Results Container -->
+                    <div id="analyticsResults" style="display: none;">
+                        <!-- Dynamic content will be loaded here -->
                     </div>
                 </div>
             </div>
@@ -225,12 +330,16 @@
 </div>
 
 <% if (investments.length > 0) { %>
-    <div class="card shadow-lg border-0 mb-4 animate__animated animate__fadeInUp">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+    <div class="card shadow-lg border-0 mb-4 animate__animated animate__fadeInUp">        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h5 class="card-title mb-0"><i class="bi bi-table me-2"></i>I tuoi investimenti</h5>
-            <button id="exportDataBtn" class="btn btn-sm btn-light">
-                <i class="bi bi-download"></i> Esporta
-            </button>
+            <div class="btn-group">
+                <button id="exportDataBtn" class="btn btn-sm btn-light">
+                    <i class="bi bi-download"></i> Esporta CSV
+                </button>
+                <button id="importDataBtn" class="btn btn-sm btn-outline-light">
+                    <i class="bi bi-upload"></i> Importa CSV
+                </button>
+            </div>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -324,6 +433,95 @@
     </div>
 <% } %>
 
+<!-- Glossary Modal -->
+<div class="modal fade" id="glossaryModal" tabindex="-1" aria-labelledby="glossaryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="glossaryModalLabel">
+                    <i class="bi bi-book me-2"></i>Glossario Finanziario
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-primary">📊 Metriche di Volatilità</h6>
+                        <dl>
+                            <dt>Volatilità Annualizzata</dt>
+                            <dd>Misura la variabilità dei rendimenti del portfolio su base annua. Una volatilità del 20% significa che il portfolio può oscillare ±20% rispetto al rendimento medio.</dd>
+                            
+                            <dt>Sharpe Ratio</dt>
+                            <dd>Rapporto tra rendimento extra e rischio assunto. Formula: (Rendimento - Tasso Risk-Free) / Volatilità. Valori >1 sono buoni, >2 eccellenti.</dd>
+                            
+                            <dt>Max Drawdown</dt>
+                            <dd>La perdita massima dal picco più alto al punto più basso. Indica quanto può calare il portfolio nei periodi negativi.</dd>
+                            
+                            <dt>Value at Risk (VaR)</dt>
+                            <dd>Perdita massima prevista nel 95% dei casi in un giorno normale. Un VaR del -2% significa che raramente perderai più del 2% in un giorno.</dd>
+                        </dl>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-success">🛡️ Metriche di Rischio Avanzate</h6>
+                        <dl>
+                            <dt>Sortino Ratio</dt>
+                            <dd>Simile allo Sharpe Ratio ma considera solo la volatilità negativa (downside). Più accurato per valutare il rischio reale di perdite.</dd>
+                            
+                            <dt>Calmar Ratio</dt>
+                            <dd>Rapporto tra rendimento annualizzato e max drawdown. Misura la capacità di generare rendimenti rispetto alle perdite massime.</dd>
+                            
+                            <dt>Correlazione</dt>
+                            <dd>Misura quanto due ETF si muovono insieme. Valori vicini a 1 indicano movimento simile, vicini a -1 movimento opposto, vicini a 0 indipendenza.</dd>
+                            
+                            <dt>Diversificazione</dt>
+                            <dd>Strategia per ridurre il rischio investendo in asset poco correlati tra loro. Un portfolio diversificato ha correlazioni basse tra i suoi componenti.</dd>
+                        </dl>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-12">
+                        <h6 class="text-warning">⚖️ Scale di Valutazione</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="small">Sharpe Ratio:</h6>
+                                <ul class="small">
+                                    <li><strong>>2.0:</strong> <span class="badge bg-success">Eccellente</span></li>
+                                    <li><strong>1.0-2.0:</strong> <span class="badge bg-primary">Buono</span></li>
+                                    <li><strong>0.5-1.0:</strong> <span class="badge bg-warning">Accettabile</span></li>
+                                    <li><strong><0.5:</strong> <span class="badge bg-danger">Da migliorare</span></li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="small">Volatilità Annualizzata:</h6>
+                                <ul class="small">
+                                    <li><strong><10%:</strong> Molto Bassa</li>
+                                    <li><strong>10-15%:</strong> Bassa</li>
+                                    <li><strong>15-25%:</strong> Moderata</li>
+                                    <li><strong>25-35%:</strong> Alta</li>
+                                    <li><strong>>35%:</strong> Molto Alta</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="alert alert-info mt-3">
+                    <h6><i class="bi bi-lightbulb me-2"></i>Suggerimenti per l'Interpretazione</h6>
+                    <ul class="mb-0">
+                        <li><strong>Portfolio Conservativo:</strong> Volatilità <15%, Sharpe Ratio >1, Correlazioni moderate</li>
+                        <li><strong>Portfolio Bilanciato:</strong> Volatilità 15-25%, Sharpe Ratio >0.5, Buona diversificazione</li>
+                        <li><strong>Portfolio Aggressivo:</strong> Volatilità >25%, Focus su rendimenti, Tolleranza drawdown elevati</li>
+                        <li><strong>Ribalancio:</strong> Considera il ribalancio quando le allocazioni si discostano >5% dai target</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="/js/charts.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -347,26 +545,42 @@
             const periodButtons = document.getElementById('timelinePeriodButtons');
             const ctx = document.getElementById('timelineChart').getContext('2d');
             let timelineChart;
-            const portfolioId = <%= currentPortfolio.id %>;
-
-            function updateTimeline(param) {
-                // Gestione YTD special
+            const portfolioId = <%= currentPortfolio.id %>;            function updateTimeline(param) {
+                // Gestione YTD e MAX special
                 let days = param;
                 let label = param;
+                
                 if (param === 'ytd') {
                     const today = new Date();
                     const startOfYear = new Date(today.getFullYear(), 0, 1);
                     days = Math.ceil((today - startOfYear) / (1000 * 60 * 60 * 24));
-                    label = 'YTD';
+                    label = 'YTD';                } else if (param === 'max') {
+                    // Per MAX, calcoliamo i giorni dalla data del primo investimento
+                    const investmentsData = <%- JSON.stringify(investments) %>;
+                    if (investmentsData && investmentsData.length > 0) {
+                        // Trova la data di acquisto più vecchia (first_buy_date)
+                        const oldestDate = investmentsData.reduce((oldest, inv) => {
+                            const buyDate = new Date(inv.buy_date); // buy_date contiene già first_buy_date
+                            return !oldest || buyDate < oldest ? buyDate : oldest;
+                        }, null);
+                        
+                        if (oldestDate) {
+                            const today = new Date();
+                            days = Math.ceil((today - oldestDate) / (1000 * 60 * 60 * 24)) + 30; // Aggiungi buffer
+                        } else {
+                            days = 365; // Fallback se non ci sono dati validi
+                        }
+                    } else {
+                        days = 365; // Fallback se non ci sono investimenti
+                    }
+                    label = 'MAX';
                 }
                 fetch(`/analytics/historical/${portfolioId}?days=${days}`)
                     .then(r => r.json())
                     .then(data => {
-                        if (!data.success) return;
-
-                        // Crea una linea per il valore investito (costante nel tempo)
+                        if (!data.success) return;                        // Usa la linea dinamica del capitale investito se disponibile, altrimenti fallback statico
                         const totalInvested = <%= totalInvested %>;
-                        const investedLine = Array(data.data.dates.length).fill(totalInvested);
+                        const investedLine = data.data.investedValues || Array(data.data.dates.length).fill(totalInvested);
 
                         const cfg = {
                             type: 'line',
@@ -691,5 +905,988 @@
             });
         });
         <% } %>
+        
+        // Export/Import CSV functionality
+        const portfolioId = <%= currentPortfolio.id %>;
+        
+        // Export CSV
+        document.getElementById('exportDataBtn')?.addEventListener('click', function() {
+            window.location.href = `/portfolio/${portfolioId}/export/csv`;
+        });
+        
+        // Import CSV
+        document.getElementById('importDataBtn')?.addEventListener('click', function() {
+            Swal.fire({
+                title: 'Importa Portfolio CSV',
+                html: `
+                    <div class="mb-3">
+                        <p class="text-muted small">Carica un file CSV con il formato: Ticker, Quote, Prezzo_Acquisto, Data_Acquisto</p>
+                        <input type="file" id="csvFileInput" class="form-control" accept=".csv" />
+                    </div>
+                    <div class="alert alert-info small">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Formato CSV richiesto:</strong><br>
+                        Ticker,Quote,Prezzo_Acquisto,Data_Acquisto<br>
+                        VWCE,10,85.50,15/03/2024<br>
+                        SWDA,5,98.20,20/03/2024
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Importa',
+                cancelButtonText: 'Annulla',
+                preConfirm: () => {
+                    const fileInput = document.getElementById('csvFileInput');
+                    const file = fileInput.files[0];
+                    
+                    if (!file) {
+                        Swal.showValidationMessage('Seleziona un file CSV');
+                        return false;
+                    }
+                    
+                    if (!file.name.toLowerCase().endsWith('.csv')) {
+                        Swal.showValidationMessage('Seleziona solo file .csv');
+                        return false;
+                    }
+                    
+                    return file;
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const formData = new FormData();
+                    formData.append('csvFile', result.value);
+                    
+                    // Show loading
+                    Swal.fire({
+                        title: 'Importazione in corso...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                    
+                    fetch(`/portfolio/${portfolioId}/import/csv`, {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            let message = data.message;
+                            if (data.errors && data.errors.length > 0) {
+                                message += '\n\nErrori:\n' + data.errors.join('\n');
+                            }
+                            
+                            Swal.fire({
+                                title: 'Import Completato',
+                                text: message,
+                                icon: data.errors && data.errors.length > 0 ? 'warning' : 'success',
+                                confirmButtonText: 'OK'
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Errore Import',
+                                text: data.error || 'Errore durante l\'importazione',
+                                icon: 'error'
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Errore import:', error);
+                        Swal.fire({
+                            title: 'Errore',
+                            text: 'Errore di rete durante l\'importazione',
+                            icon: 'error'
+                        });
+                    });
+                }
+            });        });
+    });
+
+    // ===== ALERT MANAGEMENT FUNCTIONALITY =====
+    
+    // Load alerts on page load
+    loadPortfolioAlerts();
+    
+    // Add Alert button handler
+    document.getElementById('addAlertBtn').addEventListener('click', function() {
+        showAddAlertDialog();
+    });
+    
+    // Check Alerts button handler
+    document.getElementById('checkAlertsBtn').addEventListener('click', function() {
+        checkActiveAlerts();
+    });
+    
+    // Load portfolio alerts
+    function loadPortfolioAlerts() {
+        const portfolioId = document.getElementById('portfolioSelect').value;
+        
+        fetch(`/alerts/portfolio/${portfolioId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayAlerts(data.alerts);
+                } else {
+                    console.error('Error loading alerts:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Network error loading alerts:', error);
+            })
+            .finally(() => {
+                document.getElementById('alertsLoading').style.display = 'none';
+            });
+    }
+    
+    // Display alerts in the UI
+    function displayAlerts(alerts) {
+        const alertsList = document.getElementById('alertsList');
+        const noAlerts = document.getElementById('noAlerts');
+        
+        if (alerts.length === 0) {
+            alertsList.style.display = 'none';
+            noAlerts.style.display = 'block';
+            return;
+        }
+        
+        noAlerts.style.display = 'none';
+        alertsList.style.display = 'block';
+        
+        const alertsHtml = alerts.map(alert => `
+            <div class="alert alert-light border-start border-warning border-4" data-alert-id="${alert.id}">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="flex-grow-1">
+                        <h6 class="alert-heading mb-1">
+                            <i class="bi bi-bell-fill text-warning me-2"></i>
+                            ${getAlertTypeLabel(alert.alert_type)}
+                            ${alert.ticker ? `- ${alert.ticker}` : ''}
+                        </h6>
+                        <p class="mb-1">${alert.message}</p>
+                        <small class="text-muted">
+                            <i class="bi bi-calendar3 me-1"></i>
+                            Creato: ${new Date(alert.created_at).toLocaleDateString('it-IT')}
+                            ${alert.last_triggered ? `| Ultimo trigger: ${new Date(alert.last_triggered).toLocaleDateString('it-IT')}` : ''}
+                        </small>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><button class="dropdown-item" onclick="disableAlert(${alert.id})">
+                                <i class="bi bi-pause-circle me-2"></i>Disattiva
+                            </button></li>
+                            <li><button class="dropdown-item text-danger" onclick="deleteAlert(${alert.id})">
+                                <i class="bi bi-trash me-2"></i>Elimina
+                            </button></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        
+        alertsList.innerHTML = alertsHtml;
+    }
+    
+    // Show add alert dialog
+    function showAddAlertDialog() {
+        const portfolioId = document.getElementById('portfolioSelect').value;
+        
+        Swal.fire({
+            title: 'Crea Nuovo Alert',
+            html: `
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label">Tipo di Alert</label>
+                        <select id="alertType" class="form-select">
+                            <option value="portfolio_value">Valore Portfolio</option>
+                            <option value="performance">Performance Portfolio</option>
+                            <option value="price_target">Prezzo Target ETF</option>
+                        </select>
+                    </div>
+                    <div class="col-12" id="tickerGroup" style="display: none;">
+                        <label class="form-label">Ticker ETF</label>
+                        <select id="alertTicker" class="form-select">
+                            <option value="">Seleziona ticker...</option>
+                            ${getUniqueTickersOptions()}
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Condizione</label>
+                        <select id="conditionType" class="form-select">
+                            <option value="above">Sopra</option>
+                            <option value="below">Sotto</option>
+                            <option value="change_percent">Variazione %</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Valore Soglia</label>
+                        <input type="number" id="thresholdValue" class="form-control" step="0.01" placeholder="es. 10000 o 5.5">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Messaggio Personalizzato (opzionale)</label>
+                        <textarea id="alertMessage" class="form-control" rows="2" placeholder="Messaggio personalizzato per l'alert..."></textarea>
+                    </div>
+                </div>
+            `,
+            showCancelButton: true,
+            confirmButtonText: 'Crea Alert',
+            cancelButtonText: 'Annulla',
+            preConfirm: () => {
+                const alertType = document.getElementById('alertType').value;
+                const ticker = document.getElementById('alertTicker').value;
+                const conditionType = document.getElementById('conditionType').value;
+                const thresholdValue = document.getElementById('thresholdValue').value;
+                const message = document.getElementById('alertMessage').value;
+                
+                if (!alertType || !conditionType || !thresholdValue) {
+                    Swal.showValidationMessage('Compila tutti i campi obbligatori');
+                    return false;
+                }
+                
+                if (alertType === 'price_target' && !ticker) {
+                    Swal.showValidationMessage('Seleziona un ticker per il prezzo target');
+                    return false;
+                }
+                
+                return {
+                    portfolio_id: portfolioId,
+                    ticker: alertType === 'price_target' ? ticker : null,
+                    alert_type: alertType,
+                    condition_type: conditionType,
+                    threshold_value: parseFloat(thresholdValue),
+                    message: message
+                };
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                createAlert(result.value);
+            }
+        });
+        
+        // Show/hide ticker field based on alert type
+        document.getElementById('alertType').addEventListener('change', function() {
+            const tickerGroup = document.getElementById('tickerGroup');
+            if (this.value === 'price_target') {
+                tickerGroup.style.display = 'block';
+            } else {
+                tickerGroup.style.display = 'none';
+            }
+        });
+    }
+    
+    // Create new alert
+    function createAlert(alertData) {
+        fetch('/alerts/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(alertData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    title: 'Successo!',
+                    text: 'Alert creato con successo',
+                    icon: 'success'
+                });
+                loadPortfolioAlerts(); // Reload alerts
+            } else {
+                Swal.fire({
+                    title: 'Errore',
+                    text: data.message,
+                    icon: 'error'
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error creating alert:', error);
+            Swal.fire({
+                title: 'Errore',
+                text: 'Errore di rete durante la creazione dell\'alert',
+                icon: 'error'
+            });
+        });
+    }
+    
+    // Disable alert
+    function disableAlert(alertId) {
+        Swal.fire({
+            title: 'Conferma',
+            text: 'Vuoi disattivare questo alert?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Disattiva',
+            cancelButtonText: 'Annulla'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/alerts/${alertId}/disable`, {
+                    method: 'PUT'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire('Disattivato!', 'Alert disattivato con successo', 'success');
+                        loadPortfolioAlerts();
+                    } else {
+                        Swal.fire('Errore', data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error disabling alert:', error);
+                    Swal.fire('Errore', 'Errore di rete', 'error');
+                });
+            }
+        });
+    }
+    
+    // Delete alert
+    function deleteAlert(alertId) {
+        Swal.fire({
+            title: 'Conferma Eliminazione',
+            text: 'Vuoi eliminare definitivamente questo alert?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Elimina',
+            cancelButtonText: 'Annulla',
+            confirmButtonColor: '#dc3545'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/alerts/${alertId}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire('Eliminato!', 'Alert eliminato con successo', 'success');
+                        loadPortfolioAlerts();
+                    } else {
+                        Swal.fire('Errore', data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error deleting alert:', error);
+                    Swal.fire('Errore', 'Errore di rete', 'error');
+                });
+            }
+        });
+    }
+    
+    // Check active alerts
+    function checkActiveAlerts() {
+        Swal.fire({
+            title: 'Controllo Alert',
+            text: 'Controllo alert in corso...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        
+        fetch('/alerts/check', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (data.triggeredAlerts.length > 0) {
+                    const alertMessages = data.triggeredAlerts.map(alert => 
+                        `📈 ${alert.portfolio_name}: ${alert.message}`
+                    ).join('<br>');
+                    
+                    Swal.fire({
+                        title: 'Alert Triggerati!',
+                        html: `<div class="text-start">${alertMessages}</div>`,
+                        icon: 'warning'
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Tutto OK',
+                        text: 'Nessun alert triggerato al momento',
+                        icon: 'info'
+                    });
+                }
+            } else {
+                Swal.fire('Errore', data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error checking alerts:', error);
+            Swal.fire('Errore', 'Errore di rete durante il controllo', 'error');
+        });
+    }
+    
+    // Get alert type label
+    function getAlertTypeLabel(type) {
+        const labels = {
+            'portfolio_value': 'Valore Portfolio',
+            'performance': 'Performance',
+            'price_target': 'Prezzo Target',
+            'rebalance': 'Ribalancio'
+        };
+        return labels[type] || type;
+    }
+    
+    // Get unique tickers for dropdown
+    function getUniqueTickersOptions() {
+        const tickers = Array.from(new Set(
+            Array.from(document.querySelectorAll('#investmentsTable tbody tr td:first-child'))
+                .map(td => td.textContent.trim())
+                .filter(ticker => ticker)
+        ));
+        
+        return tickers.map(ticker => `<option value="${ticker}">${ticker}</option>`).join('');
+    }
+      // Reload alerts when portfolio changes
+    document.getElementById('portfolioSelect').addEventListener('change', function() {
+        document.getElementById('alertsLoading').style.display = 'block';
+        document.getElementById('alertsList').style.display = 'none';
+        document.getElementById('noAlerts').style.display = 'none';
+        loadPortfolioAlerts();
+    });
+
+    // ===== ADVANCED ANALYTICS FUNCTIONALITY =====
+    
+    // Advanced Analytics button handlers
+    document.getElementById('correlationBtn').addEventListener('click', function() {
+        loadAdvancedAnalytics('correlation');
+    });
+    
+    document.getElementById('volatilityBtn').addEventListener('click', function() {
+        loadAdvancedAnalytics('volatility');
+    });
+    
+    document.getElementById('riskBtn').addEventListener('click', function() {
+        loadAdvancedAnalytics('risk');
+    });
+    
+    document.getElementById('rebalanceBtn').addEventListener('click', function() {
+        loadAdvancedAnalytics('rebalance');
+    });
+    
+    // Load advanced analytics data
+    function loadAdvancedAnalytics(type) {
+        const portfolioId = document.getElementById('portfolioSelect').value;
+        
+        // Show loading state
+        document.getElementById('advancedAnalyticsLoading').style.display = 'block';
+        document.getElementById('analyticsResults').style.display = 'none';
+        
+        // Update button states
+        document.querySelectorAll('#advancedAnalyticsContent .btn-group .btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.getElementById(type + 'Btn').classList.add('active');
+        
+        let url, method = 'GET', body = null;
+        
+        switch(type) {
+            case 'correlation':
+                url = `/analytics/correlation/${portfolioId}?days=90`;
+                break;
+            case 'volatility':
+                url = `/analytics/volatility/${portfolioId}?days=252`;
+                break;
+            case 'risk':
+                url = `/analytics/risk/${portfolioId}?days=252&riskFreeRate=0.02`;
+                break;
+            case 'rebalance':
+                url = `/analytics/rebalance/${portfolioId}`;
+                method = 'POST';
+                body = JSON.stringify({ targetAllocations: {} });
+                break;
+        }
+        
+        const fetchOptions = {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        };
+        
+        if (body) {
+            fetchOptions.body = body;
+        }
+        
+        fetch(url, fetchOptions)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayAdvancedAnalytics(type, data.data);
+                } else {
+                    displayAnalyticsError(data.error || 'Errore nel caricamento dei dati');
+                }
+            })
+            .catch(error => {
+                console.error('Error loading advanced analytics:', error);
+                displayAnalyticsError('Errore di rete durante il caricamento');
+            })
+            .finally(() => {
+                document.getElementById('advancedAnalyticsLoading').style.display = 'none';
+            });
+    }
+    
+    // Display advanced analytics results
+    function displayAdvancedAnalytics(type, data) {
+        const resultsContainer = document.getElementById('analyticsResults');
+        let html = '';
+        
+        switch(type) {
+            case 'correlation':
+                html = generateCorrelationHTML(data);
+                break;
+            case 'volatility':
+                html = generateVolatilityHTML(data);
+                break;
+            case 'risk':
+                html = generateRiskHTML(data);
+                break;
+            case 'rebalance':
+                html = generateRebalanceHTML(data);
+                break;
+        }
+        
+        resultsContainer.innerHTML = html;
+        resultsContainer.style.display = 'block';
+    }
+    
+    // Generate correlation analysis HTML
+    function generateCorrelationHTML(data) {
+        if (data.message) {
+            return `<div class="alert alert-warning">${data.message}</div>`;
+        }
+        
+        let html = `
+            <div class="row">
+                <div class="col-md-8">
+                    <h6><i class="bi bi-diagram-3 me-2"></i>Matrice di Correlazione</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>ETF</th>
+        `;
+        
+        data.tickers.forEach(ticker => {
+            html += `<th class="text-center">${ticker}</th>`;
+        });
+        html += '</tr></thead><tbody>';
+        
+        data.tickers.forEach(ticker1 => {
+            html += `<tr><td><strong>${ticker1}</strong></td>`;
+            data.tickers.forEach(ticker2 => {
+                const correlation = data.correlationMatrix[ticker1][ticker2];
+                const colorClass = getCorrelationColorClass(correlation);
+                html += `<td class="text-center ${colorClass}">${correlation.toFixed(3)}</td>`;
+            });
+            html += '</tr>';
+        });
+        
+        html += `
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <h6><i class="bi bi-info-circle me-2"></i>Analisi Correlazioni</h6>
+                    <div class="card">
+                        <div class="card-body">
+                            <p><strong>Correlazione più alta:</strong><br>
+                            ${data.analysis.highestCorrelation.pair}: ${data.analysis.highestCorrelation.correlation.toFixed(3)}<br>
+                            <small class="text-muted">${data.analysis.highestCorrelation.level}</small></p>
+                            
+                            <p><strong>Correlazione più bassa:</strong><br>
+                            ${data.analysis.lowestCorrelation.pair}: ${data.analysis.lowestCorrelation.correlation.toFixed(3)}<br>
+                            <small class="text-muted">${data.analysis.lowestCorrelation.level}</small></p>
+                            
+                            <p><strong>Correlazione media:</strong><br>
+                            ${data.analysis.averageCorrelation.toFixed(3)}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        return html;
+    }
+      // Generate volatility analysis HTML
+    function generateVolatilityHTML(data) {
+        if (data.message) {
+            return `<div class="alert alert-warning">${data.message}</div>`;
+        }
+        
+        // Check if we have interpretation data, if not create default interpretations
+        if (!data.interpretation) {
+            data.interpretation = {
+                volatility: getVolatilityInterpretation(data.annualizedVolatility),
+                sharpe: getSharpeRatioInterpretation(data.sharpeRatio)
+            };
+        }
+          return `
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        <h6><i class="bi bi-info-circle me-2"></i>Guida alle Metriche di Volatilità e Rischio</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="mb-2"><strong>📊 Volatilità Annualizzata:</strong> Misura quanto i prezzi del portfolio oscillano rispetto alla media. Una volatilità più alta indica maggiore rischio ma anche potenziali rendimenti più elevati.</p>
+                                <p class="mb-2"><strong>📈 Sharpe Ratio:</strong> Indica quanto rendimento extra ottieni per ogni unità di rischio aggiuntivo. Valori > 1 sono considerati buoni, > 2 eccellenti.</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="mb-2"><strong>📉 Max Drawdown:</strong> La perdita massima dal picco più alto. Ti aiuta a capire quanto il portfolio potrebbe calare nei periodi negativi.</p>
+                                <p class="mb-0"><strong>⚠️ Value at Risk (VaR):</strong> La perdita massima che potresti subire nel 95% dei casi in un giorno normale di trading.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <h6><i class="bi bi-activity me-2"></i>Metriche di Volatilità 
+                        <i class="bi bi-question-circle text-muted" data-bs-toggle="tooltip" 
+                           title="Le metriche di volatilità misurano il rischio del tuo portfolio analizzando le oscillazioni dei prezzi"></i>
+                    </h6>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <div class="bg-light p-3 rounded">
+                                        <strong>Volatilità Annualizzata 
+                                            <i class="bi bi-info-circle-fill text-primary" data-bs-toggle="tooltip" 
+                                               title="Deviazione standard dei rendimenti annualizzata. Valori tipici: 10-15% bassa, 15-25% media, >25% alta"></i>
+                                        </strong><br>
+                                        <span class="h5 text-primary">${(data.annualizedVolatility * 100).toFixed(2)}%</span><br>
+                                        <small class="text-muted">${data.interpretation.volatility}</small>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="bg-light p-3 rounded">
+                                        <strong>Rendimento Annualizzato 
+                                            <i class="bi bi-info-circle-fill text-success" data-bs-toggle="tooltip" 
+                                               title="Rendimento medio annuo del portfolio basato sui dati storici"></i>
+                                        </strong><br>
+                                        <span class="h5 ${data.annualizedReturn >= 0 ? 'text-success' : 'text-danger'}">${(data.annualizedReturn * 100).toFixed(2)}%</span>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="bg-light p-3 rounded">
+                                        <strong>Sharpe Ratio 
+                                            <i class="bi bi-info-circle-fill text-info" data-bs-toggle="tooltip" 
+                                               title="Misura l'efficienza del portfolio: rendimento extra per unità di rischio. >0.5 accettabile, >1 buono, >2 eccellente"></i>
+                                        </strong><br>
+                                        <span class="h5 text-info">${data.sharpeRatio.toFixed(3)}</span><br>
+                                        <small class="text-muted">${data.interpretation.sharpe}</small>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="bg-light p-3 rounded">
+                                        <strong>Max Drawdown 
+                                            <i class="bi bi-info-circle-fill text-warning" data-bs-toggle="tooltip" 
+                                               title="La perdita massima dal picco più alto. Importante per valutare la resilienza del portfolio"></i>
+                                        </strong><br>
+                                        <span class="h5 text-warning">${(data.maxDrawdown * 100).toFixed(2)}%</span><br>
+                                        <small class="text-muted">per ${data.maxDrawdownDays} giorni</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>                <div class="col-md-6">
+                    <h6><i class="bi bi-shield-check me-2"></i>Statistiche Rendimenti 
+                        <i class="bi bi-question-circle text-muted" data-bs-toggle="tooltip" 
+                           title="Analisi dettagliata della distribuzione dei rendimenti del portfolio"></i>
+                    </h6>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <strong>Value at Risk (95%) 
+                                    <i class="bi bi-exclamation-triangle-fill text-danger" data-bs-toggle="tooltip" 
+                                       title="Perdita massima giornaliera che potrebbe verificarsi nel 95% dei casi. Un VaR del -2% significa che nel 95% dei giorni le perdite non supereranno il 2%"></i>
+                                </strong><br>
+                                <span class="h6 text-danger">${(data.valueAtRisk95 * 100).toFixed(2)}%</span>
+                                <p class="small text-muted">Perdita massima prevista nel 95% dei casi</p>
+                            </div>
+                            <div class="row">
+                                <div class="col-4 text-center">
+                                    <div class="text-success">
+                                        <strong>${data.positiveReturns}</strong><br>
+                                        <small>Giorni + 
+                                            <i class="bi bi-info-circle" data-bs-toggle="tooltip" 
+                                               title="Numero di giorni con rendimenti positivi nel periodo analizzato"></i>
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="col-4 text-center">
+                                    <div class="text-danger">
+                                        <strong>${data.negativeReturns}</strong><br>
+                                        <small>Giorni - 
+                                            <i class="bi bi-info-circle" data-bs-toggle="tooltip" 
+                                               title="Numero di giorni con rendimenti negativi nel periodo analizzato"></i>
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="col-4 text-center">
+                                    <div class="text-info">
+                                        <strong>${data.totalReturns}</strong><br>
+                                        <small>Totale</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+      // Generate risk metrics HTML
+    function generateRiskHTML(data) {
+        if (data.message) {
+            return `<div class="alert alert-warning">${data.message}</div>`;
+        }
+        
+        return `
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        <h6><i class="bi bi-mortarboard me-2"></i>Guida alle Metriche di Rischio Avanzate</h6>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <p class="mb-1"><strong>📊 Sharpe Ratio:</strong> Efficienza risk-adjusted</p>
+                                <small>Misura quanto rendimento extra ottieni per ogni unità di rischio. È il rapporto più usato dagli investitori professionali.</small>
+                            </div>
+                            <div class="col-md-4">
+                                <p class="mb-1"><strong>📉 Sortino Ratio:</strong> Focus sui ribassi</p>
+                                <small>Simile allo Sharpe ma considera solo la volatilità negativa. Più accurato per valutare il rischio reale.</small>
+                            </div>
+                            <div class="col-md-4">
+                                <p class="mb-1"><strong>⚖️ Calmar Ratio:</strong> Resilienza ai crolli</p>
+                                <small>Rapporto tra rendimento e massimo drawdown. Indica quanto bene il portfolio resiste alle crisi.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-8">
+                    <h6><i class="bi bi-shield-check me-2"></i>Metriche di Rischio Avanzate 
+                        <i class="bi bi-question-circle text-muted" data-bs-toggle="tooltip" 
+                           title="Rapporti avanzati che combinano rendimento e rischio per valutare l'efficienza del portfolio"></i>
+                    </h6>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="card border-primary">
+                                <div class="card-body text-center">
+                                    <h3 class="text-primary">${data.sharpeRatio.toFixed(3)}
+                                        <i class="bi bi-info-circle-fill ms-1" data-bs-toggle="tooltip" 
+                                           title="Sharpe Ratio: (Rendimento - Tasso Risk-Free) / Volatilità. Valori: >2 eccellente, >1 buono, >0.5 accettabile"></i>
+                                    </h3>
+                                    <h6>Sharpe Ratio</h6>
+                                    <p class="small">${data.interpretation.sharpe}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-info">
+                                <div class="card-body text-center">
+                                    <h3 class="text-info">${data.sortinoRatio.toFixed(3)}
+                                        <i class="bi bi-info-circle-fill ms-1" data-bs-toggle="tooltip" 
+                                           title="Sortino Ratio: Come lo Sharpe ma usa solo la volatilità dei rendimenti negativi. Più accurato per misurare il rischio reale"></i>
+                                    </h3>
+                                    <h6>Sortino Ratio</h6>
+                                    <p class="small">${data.interpretation.sortino}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-warning">
+                                <div class="card-body text-center">
+                                    <h3 class="text-warning">${data.calmarRatio.toFixed(3)}
+                                        <i class="bi bi-info-circle-fill ms-1" data-bs-toggle="tooltip" 
+                                           title="Calmar Ratio: Rendimento annualizzato / Max Drawdown. Indica la capacità di generare rendimenti rispetto alle perdite massime"></i>
+                                    </h3>
+                                    <h6>Calmar Ratio</h6>
+                                    <p class="small">Rendimento/Max Drawdown</p>
+                                </div>
+                                                       </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <h6><i class="bi bi-info-circle me-2"></i>Valutazione Rischio</h6>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <strong>Classificazione Performance:</strong><br>
+                                ${getRiskBadge(data.riskMetrics)}
+                            </div>
+                            <hr>
+                            <div class="small">
+                                <p><strong>Tasso Risk-Free:</strong> ${(data.riskFreeRate * 100).toFixed(2)}%</p>
+                                <p><strong>Periodo di analisi:</strong> ${Math.round(data.totalReturns / 252 * 12)} mesi</p>
+                                <p><strong>Volatilità:</strong> ${data.interpretation.volatility}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+      // Generate rebalancing recommendations HTML
+    function generateRebalanceHTML(data) {
+        if (data.message) {
+            return `<div class="alert alert-warning">${data.message}</div>`;
+        }
+        
+        if (!data.rebalanceNeeded) {
+            return `
+                <div class="alert alert-success">
+                    <i class="bi bi-check-circle me-2"></i>
+                    <strong>Portfolio ben bilanciato!</strong><br>
+                    Il tuo portfolio non necessita di ribalancio al momento.
+                </div>
+            `;
+        }
+        
+        let html = `
+            <div class="row">
+                <div class="col-md-8">
+                    <h6><i class="bi bi-arrows-move me-2"></i>Raccomandazioni di Ribalancio</h6>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>ETF</th>
+                                    <th>Allocazione Attuale</th>
+                                    <th>Allocazione Target</th>
+                                    <th>Differenza</th>
+                                    <th>Azione</th>
+                                    <th>Priorità</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+        `;
+        
+        data.recommendations.forEach(rec => {
+            const actionClass = rec.action === 'BUY' ? 'text-success' : 'text-danger';
+            const priorityClass = rec.priority === 'HIGH' ? 'badge bg-danger' : 'badge bg-warning';
+            
+            html += `
+                <tr>
+                    <td><strong>${rec.ticker}</strong></td>
+                    <td>${rec.currentAllocation.toFixed(1)}%</td>
+                    <td>${rec.targetAllocation.toFixed(1)}%</td>
+                    <td class="${rec.difference > 0 ? 'text-success' : 'text-danger'}">
+                        ${rec.difference > 0 ? '+' : ''}${rec.difference.toFixed(1)}%
+                    </td>
+                    <td class="${actionClass}">
+                        <strong>${rec.action}</strong><br>
+                        <small>€${Math.abs(rec.valueChange).toFixed(2)}</small>
+                    </td>
+                    <td><span class="${priorityClass}">${rec.priority}</span></td>
+                </tr>
+            `;
+        });
+        
+        html += `
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <h6><i class="bi bi-info-circle me-2"></i>Riepilogo</h6>
+                    <div class="card">
+                        <div class="card-body">
+                            <p><strong>Valore Portfolio:</strong><br>€${data.totalPortfolioValue.toFixed(2)}</p>
+                            <p><strong>Aggiustamenti totali:</strong> ${data.summary.totalAdjustments}</p>
+                            <p><strong>Alta priorità:</strong> ${data.summary.highPriority}</p>
+                            <p><strong>Media priorità:</strong> ${data.summary.mediumPriority}</p>
+                            <hr>
+                            <p class="small text-muted">
+                                Le raccomandazioni sono basate su allocazioni equipesi. 
+                                Puoi personalizzare le allocazioni target.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        return html;
+    }
+      // Helper functions
+    function getCorrelationColorClass(correlation) {
+        const abs = Math.abs(correlation);
+        if (abs > 0.8) return 'bg-danger text-white';
+        if (abs > 0.6) return 'bg-warning';
+        if (abs > 0.4) return 'bg-info text-white';
+        if (abs > 0.2) return 'bg-light';
+        return '';
+    }
+    
+    function getRiskBadge(riskMetrics) {
+        if (riskMetrics.excellent) return '<span class="badge bg-success">Eccellente</span>';
+        if (riskMetrics.good) return '<span class="badge bg-primary">Buono</span>';
+        if (riskMetrics.acceptable) return '<span class="badge bg-warning">Accettabile</span>';
+        return '<span class="badge bg-danger">Da migliorare</span>';
+    }
+    
+    function getVolatilityInterpretation(volatility) {
+        if (volatility < 0.1) return 'Molto Bassa - Portfolio stabile';
+        if (volatility < 0.15) return 'Bassa - Portfolio relativamente stabile';
+        if (volatility < 0.25) return 'Moderata - Volatilità normale per ETF';
+        if (volatility < 0.35) return 'Alta - Portfolio abbastanza volatile';
+        return 'Molto Alta - Portfolio molto volatile';
+    }
+    
+    function getSharpeRatioInterpretation(ratio) {
+        if (ratio > 2) return 'Eccellente - Rendimento molto superiore al rischio';
+        if (ratio > 1) return 'Buono - Rendimento superiore al rischio';
+        if (ratio > 0.5) return 'Accettabile - Rendimento moderato rispetto al rischio';
+        if (ratio > 0) return 'Basso - Rendimento minimo rispetto al rischio';
+        return 'Negativo - Rendimento inferiore al tasso risk-free';
+    }
+    
+    function displayAnalyticsError(message) {
+        const resultsContainer = document.getElementById('analyticsResults');
+        resultsContainer.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                <strong>Errore:</strong> ${message}
+            </div>
+        `;
+        resultsContainer.style.display = 'block';
+    }
+
+    // Initialize tooltips for analytics explanations
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize all tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl, {
+                html: true,
+                placement: 'auto'
+            });
+        });
+        
+        // Update tooltips when analytics results are displayed
+        const originalDisplayAdvancedAnalytics = displayAdvancedAnalytics;
+        displayAdvancedAnalytics = function(type, data) {
+            originalDisplayAdvancedAnalytics(type, data);
+            
+            // Re-initialize tooltips for newly added content
+            setTimeout(() => {
+                var newTooltipTriggerList = [].slice.call(document.querySelectorAll('#analyticsResults [data-bs-toggle="tooltip"]'));
+                var newTooltipList = newTooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl, {
+                        html: true,
+                        placement: 'auto'
+                    });
+                });
+            }, 100);
+        };
     });
 </script>
