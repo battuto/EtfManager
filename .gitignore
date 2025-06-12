@@ -75,3 +75,14 @@ data/
 # Build directories
 dist/
 build/
+
+# Test files and temporary documentation
+test_*.js
+test_*.csv
+debug_*.js
+verify_*.js
+*_SUCCESS.md
+*_COMPLETE.md
+*_REPORT.md
+*_CHECKLIST.md
+REFACTORING_*.md
