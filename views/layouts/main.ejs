@@ -15,14 +15,40 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
-<div class="container py-4">
-    <header class="pb-3 mb-4 border-bottom">
+<div class="container py-4">    <header class="pb-3 mb-4 border-bottom">
         <div class="d-flex align-items-center justify-content-between">
             <a href="/" class="d-flex align-items-center text-dark text-decoration-none">
                 <i class="bi bi-bar-chart-line-fill fs-1 me-2 text-primary"></i>
                 <span class="fs-2 fw-bold">Portfolio ETF Manager</span>
             </a>
-            <div>
+            <div class="d-flex align-items-center">
+                <% if (isAuthenticated) { %>
+                    <div class="dropdown me-3">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> <%= user.username %>
+                        </button>
+                        <ul class="dropdown-menu">                            <li><a class="dropdown-item" href="/auth/profile"><i class="bi bi-person"></i> Profilo</a></li>
+                            <% if (user.role === 'admin') { %>
+                                <li><a class="dropdown-item" href="/admin"><i class="bi bi-gear"></i> Admin</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                            <% } %>
+                            <li>
+                                <a href="/auth/logout" class="dropdown-item text-danger">
+                                    <i class="bi bi-box-arrow-right"></i> Logout
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                <% } else { %>
+                    <div class="me-3">
+                        <a href="/auth/login" class="btn btn-outline-primary me-2">
+                            <i class="bi bi-box-arrow-in-right"></i> Accedi
+                        </a>
+                        <a href="/auth/register" class="btn btn-primary">
+                            <i class="bi bi-person-plus"></i> Registrati
+                        </a>
+                    </div>
+                <% } %>
                 <button id="themeToggle" class="btn btn-outline-primary">
                     <i class="bi bi-moon-stars"></i> Modalità scura
                 </button>

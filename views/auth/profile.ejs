@@ -1,0 +1,169 @@
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-person-circle"></i> Profilo Utente
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <!-- User Information -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Informazioni Personali</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Username:</strong></td>
+                                    <td><%= user.username %></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Email:</strong></td>
+                                    <td><%= user.email %></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Nome:</strong></td>
+                                    <td><%= user.first_name || 'Non specificato' %></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Cognome:</strong></td>
+                                    <td><%= user.last_name || 'Non specificato' %></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Ruolo:</strong></td>
+                                    <td>
+                                        <span class="badge <%= user.role === 'admin' ? 'bg-danger' : 'bg-primary' %>">
+                                            <%= user.role === 'admin' ? 'Amministratore' : 'Utente' %>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Statistiche Account</h5>
+                            <div class="text-center">
+                                <div class="avatar-placeholder mb-3">
+                                    <i class="bi bi-person-circle" style="font-size: 4rem; color: #6c757d;"></i>
+                                </div>
+                                <p class="text-muted">
+                                    Account creato il <br>
+                                    <strong>Gennaio 2025</strong>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="row">
+                        <div class="col-12">
+                            <h5>Azioni Account</h5>
+                            <div class="d-flex gap-2 flex-wrap">
+                                <button class="btn btn-outline-primary" onclick="editProfile()">
+                                    <i class="bi bi-pencil"></i> Modifica Profilo
+                                </button>
+                                <button class="btn btn-outline-warning" onclick="changePassword()">
+                                    <i class="bi bi-key"></i> Cambia Password
+                                </button>
+                                <a href="/" class="btn btn-outline-secondary">
+                                    <i class="bi bi-arrow-left"></i> Torna al Portfolio
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function editProfile() {
+    Swal.fire({
+        title: 'Modifica Profilo',
+        html: `
+            <div class="mb-3">
+                <label class="form-label">Nome</label>
+                <input id="firstName" class="form-control" value="<%= user.first_name || '' %>" placeholder="Nome">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Cognome</label>
+                <input id="lastName" class="form-control" value="<%= user.last_name || '' %>" placeholder="Cognome">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input id="email" type="email" class="form-control" value="<%= user.email %>" placeholder="Email">
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Salva',
+        cancelButtonText: 'Annulla',
+        preConfirm: () => {
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const email = document.getElementById('email').value;
+            
+            if (!email) {
+                Swal.showValidationMessage('Email è obbligatoria');
+                return false;
+            }
+            
+            return { firstName, lastName, email };
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Implementation for profile update
+            Swal.fire('Info', 'Funzionalità in sviluppo', 'info');
+        }
+    });
+}
+
+function changePassword() {
+    Swal.fire({
+        title: 'Cambia Password',
+        html: `
+            <div class="mb-3">
+                <label class="form-label">Password Attuale</label>
+                <input id="currentPassword" type="password" class="form-control" placeholder="Password attuale">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Nuova Password</label>
+                <input id="newPassword" type="password" class="form-control" placeholder="Nuova password">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Conferma Nuova Password</label>
+                <input id="confirmPassword" type="password" class="form-control" placeholder="Conferma password">
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Cambia Password',
+        cancelButtonText: 'Annulla',
+        preConfirm: () => {
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                Swal.showValidationMessage('Tutti i campi sono obbligatori');
+                return false;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                Swal.showValidationMessage('Le password non coincidono');
+                return false;
+            }
+            
+            if (newPassword.length < 8) {
+                Swal.showValidationMessage('La password deve essere di almeno 8 caratteri');
+                return false;
+            }
+            
+            return { currentPassword, newPassword };
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Implementation for password change
+            Swal.fire('Info', 'Funzionalità in sviluppo', 'info');
+        }
+    });
+}
+</script>

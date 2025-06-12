@@ -14,14 +14,18 @@ import { updateInvestment as updateInvestmentModel, deleteInvestment as deleteIn
  */
 export async function getIndexPage(req, res) {
     try {
-        // Determine selected portfolio (default = 1)
-        const portfolioId = parseInt(req.query.portfolio || 1);
-
-        // Get current portfolio
+        // Allow both authenticated and guest users
+        const isAuthenticated = req.session && req.session.user;
+        
+        // Determine selected portfolio (default = 1 for guest)
+        const portfolioId = parseInt(req.query.portfolio || 1);        // Get current portfolio
         const currentPortfolio = await getPortfolioById(portfolioId);
 
-        // Get all portfolios for selector
-        const portfolios = await getPortfolios();
+        // Get user ID from session
+        const userId = req.session?.user?.id || null;
+
+        // Get all portfolios for user (or guest portfolios if not authenticated)
+        const portfolios = await getPortfolios(userId);
 
         // Get investments for this portfolio
         const investments = await getInvestmentsWithCurrentPrice(portfolioId);
@@ -93,7 +97,7 @@ export async function moveInvestmentBetweenPortfolios(req, res) {
  */
 export async function createInvestment(req, res) {
     try {
-        const { ticker, shares, buy_price, buy_date } = req.body;
+        const { ticker, shares, buy_price, buy_date, portfolio_id } = req.body;
 
         // Validate required fields
         if (!ticker || !shares || !buy_price || !buy_date) {
@@ -102,7 +106,17 @@ export async function createInvestment(req, res) {
             });
         }
 
-        await addInvestment({ ticker, shares, buy_price, buy_date });
+        // Get user ID from session
+        const userId = req.session?.user?.id || null;
+
+        await addInvestment({ 
+            ticker, 
+            shares, 
+            buy_price, 
+            buy_date, 
+            portfolio_id: portfolio_id || 1 
+        }, userId);
+        
         res.redirect('/');
     } catch (error) {
         console.error('💰 Error creating investment:', error);

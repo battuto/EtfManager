@@ -1,10 +1,15 @@
 import express from 'express';
+import session from 'express-session';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import morgan from 'morgan';
 import indexRoutes from './routes/index.js';
+import adminRoutes from './routes/admin/adminRoutes.js';
+import authRoutes from './routes/auth.js';
 import { initDb, getDb } from './config/database.js';
 import { initAlertsTable } from './models/alert.js';
+import { setUserLocals } from './middleware/auth.js';
+import { initDemoUsers } from './scripts/initUsersSQLite.js';
 import expressLayouts from 'express-ejs-layouts';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -18,6 +23,22 @@ app.use(morgan('combined'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Session configuration
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'etf-portfolio-secret-key-change-in-production',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
+}));
+
+// User locals middleware (makes user available in all views)
+app.use(setUserLocals);
+
 app.use(expressLayouts);
 
 // Configure view engine
@@ -40,7 +61,19 @@ app.use((req, res, next) => {
 });
 
 // Routes
+app.use('/auth', authRoutes);
 app.use('/', indexRoutes);
+app.use('/admin', adminRoutes);
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+    res.json({ 
+        success: true, 
+        status: 'healthy',
+        timestamp: new Date().toISOString(),
+        version: process.env.npm_package_version || '2.0.0'
+    });
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -65,11 +98,13 @@ async function initializeApp() {
         
         // Initialize database tables
         await initDb();
-        console.log('✅ Database tables initialized');
-        
-        // Initialize alerts system
+        console.log('✅ Database tables initialized');        // Initialize alerts system
         await initAlertsTable();
         console.log('✅ Alerts system initialized');
+        
+        // Initialize demo users
+        await initDemoUsers();
+        console.log('✅ Demo users initialized');
         
         // Start server with port fallback
         startServerWithFallback(PORT);

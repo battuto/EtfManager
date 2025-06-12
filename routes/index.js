@@ -35,12 +35,14 @@ router.post('/add', asyncHandler(createInvestment));
 
 // API portfolios
 router.get('/portfolios', asyncHandler(async (req, res) => {
-    const portfolios = await getPortfolios();
+    const userId = req.session?.user?.id || null;
+    const portfolios = await getPortfolios(userId);
     res.json({ success: true, portfolios });
 }));
 
 router.post('/portfolios/create', asyncHandler(async (req, res) => {
-    const id = await createPortfolio(req.body);
+    const userId = req.session?.user?.id || null;
+    const id = await createPortfolio(req.body, userId);
     res.json({ success: true, id });
 }));
 

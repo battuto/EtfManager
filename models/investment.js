@@ -126,9 +126,8 @@ export async function getPurchaseHistoryByTicker(portfolioId, ticker) {
 /**
  * Aggiunge un nuovo investimento
  */
-export async function addInvestment(investment) {
+export async function addInvestment(investment, userId = null) {
     const { ticker, shares, buy_price, buy_date, portfolio_id = 1 } = investment;
-
 
     // Cerca ISIN per il ticker (richiama findIsinFromJustETF tramite findIsin)
     try {
@@ -141,8 +140,8 @@ export async function addInvestment(investment) {
 
     // Inserisci sempre un nuovo record per mantenere la cronologia degli acquisti
     return runQuery(
-        'INSERT INTO investments (portfolio_id, ticker, shares, buy_price, buy_date) VALUES (?, ?, ?, ?, ?)',
-        [portfolio_id, ticker.toUpperCase(), parseFloat(shares), parseFloat(buy_price), buy_date]
+        'INSERT INTO investments (portfolio_id, ticker, shares, buy_price, buy_date, user_id) VALUES (?, ?, ?, ?, ?, ?)',
+        [portfolio_id, ticker.toUpperCase(), parseFloat(shares), parseFloat(buy_price), buy_date, userId]
     );
 }
 

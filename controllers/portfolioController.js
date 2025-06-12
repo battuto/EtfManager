@@ -30,11 +30,24 @@ export function getPortfolioById(id) {
 }
 
 /**
- * Get all portfolios ordered by ID
+ * Get all portfolios for a specific user
+ * @param {number} userId - User ID (null for guest portfolios)
  * @returns {Promise<Array>} Array of portfolio objects
  */
-export function getPortfolios() {
-    return getAll('SELECT id, name, description, created_at FROM portfolios ORDER BY id')
+export function getPortfolios(userId = null) {
+    let query, params;
+    
+    if (userId) {
+        // Get portfolios for authenticated user
+        query = 'SELECT id, name, description, created_at FROM portfolios WHERE user_id = ? ORDER BY id';
+        params = [userId];
+    } else {
+        // Get guest portfolios (user_id IS NULL)
+        query = 'SELECT id, name, description, created_at FROM portfolios WHERE user_id IS NULL ORDER BY id';
+        params = [];
+    }
+    
+    return getAll(query, params)
         .catch(error => {
             console.error('📂 Error getting portfolios:', error);
             throw error;
@@ -42,20 +55,24 @@ export function getPortfolios() {
 }
 
 /**
- * Create a new portfolio
+ * Create a new portfolio for a specific user
  * @param {Object} portfolio - Portfolio data object
  * @param {string} portfolio.name - Portfolio name
  * @param {string} portfolio.description - Portfolio description
+ * @param {number} userId - User ID (null for guest portfolio)
  * @returns {Promise<number>} ID of the created portfolio
  */
-export function createPortfolio(portfolio) {
+export function createPortfolio(portfolio, userId = null) {
     const { name, description } = portfolio;
     
     if (!name || name.trim() === '') {
         throw new Error('Portfolio name is required');
     }
     
-    return runQuery('INSERT INTO portfolios (name, description) VALUES (?, ?)', [name.trim(), description || ''])
+    return runQuery(
+        'INSERT INTO portfolios (name, description, user_id) VALUES (?, ?, ?)', 
+        [name.trim(), description || '', userId]
+    )
         .then(result => {
             console.log('✅ Portfolio created successfully with ID:', result.lastID);
             return result.lastID;

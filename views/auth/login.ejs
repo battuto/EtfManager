@@ -1,0 +1,183 @@
+<div class="container-fluid vh-100">
+    <div class="row h-100">
+        <!-- Left side - Login Form -->
+        <div class="col-md-6 d-flex align-items-center justify-content-center">
+            <div class="w-100" style="max-width: 400px;">
+                <div class="text-center mb-5">
+                    <i class="bi bi-bar-chart-line-fill text-primary" style="font-size: 3rem;"></i>
+                    <h2 class="mt-3 mb-1">ETF Portfolio Manager</h2>
+                    <p class="text-muted">Accedi al tuo account</p>
+                </div>
+
+                <% if (typeof error !== 'undefined' && error) { %>
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-circle me-2"></i>
+                        <%= error %>
+                    </div>
+                <% } %>
+
+                <form action="/auth/login" method="POST" id="loginForm">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username o Email</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-person"></i>
+                            </span>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="username" 
+                                name="username" 
+                                placeholder="Inserisci username o email"
+                                required
+                                autocomplete="username"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-lock"></i>
+                            </span>
+                            <input 
+                                type="password" 
+                                class="form-control" 
+                                id="password" 
+                                name="password" 
+                                placeholder="Inserisci password"
+                                required
+                                autocomplete="current-password"
+                            >
+                            <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="rememberMe" name="remember">
+                        <label class="form-check-label" for="rememberMe">
+                            Ricordami
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 mb-3">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>
+                        Accedi
+                    </button>
+                </form>
+
+                <div class="text-center">
+                    <p class="mb-2">Non hai un account?</p>
+                    <a href="/auth/register" class="btn btn-outline-primary">
+                        <i class="bi bi-person-plus me-2"></i>
+                        Registrati
+                    </a>
+                </div>
+
+                <hr class="my-4">
+
+                <div class="text-center">
+                    <h6 class="text-muted mb-3">Account Demo</h6>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <button type="button" class="btn btn-outline-success btn-sm w-100" onclick="fillDemoUser()">
+                                <i class="bi bi-person-check me-1"></i>
+                                Demo User
+                            </button>
+                        </div>
+                        <div class="col-6">
+                            <button type="button" class="btn btn-outline-danger btn-sm w-100" onclick="fillDemoAdmin()">
+                                <i class="bi bi-shield-check me-1"></i>
+                                Demo Admin
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right side - Info Panel -->
+        <div class="col-md-6 bg-primary text-white d-flex align-items-center">
+            <div class="p-5">
+                <h3 class="mb-4">Gestisci i tuoi investimenti ETF</h3>
+                <div class="row g-4">
+                    <div class="col-12">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-graph-up-arrow me-3" style="font-size: 2rem;"></i>
+                            <div>
+                                <h5 class="mb-1">Analytics Avanzate</h5>
+                                <p class="mb-0 opacity-75">Traccia performance, volatilità e correlazioni</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-bell me-3" style="font-size: 2rem;"></i>
+                            <div>
+                                <h5 class="mb-1">Alert Intelligenti</h5>
+                                <p class="mb-0 opacity-75">Notifiche automatiche su prezzi e performance</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-people me-3" style="font-size: 2rem;"></i>
+                            <div>
+                                <h5 class="mb-1">Multi-Utente</h5>
+                                <p class="mb-0 opacity-75">Gestione sicura per team e famiglie</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-shield-check me-3" style="font-size: 2rem;"></i>
+                            <div>
+                                <h5 class="mb-1">Sicurezza Enterprise</h5>
+                                <p class="mb-0 opacity-75">Crittografia e controlli accesso avanzati</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Toggle password visibility
+document.getElementById('togglePassword').addEventListener('click', function() {
+    const password = document.getElementById('password');
+    const icon = this.querySelector('i');
+    
+    if (password.type === 'password') {
+        password.type = 'text';
+        icon.classList.remove('bi-eye');
+        icon.classList.add('bi-eye-slash');
+    } else {
+        password.type = 'password';
+        icon.classList.remove('bi-eye-slash');
+        icon.classList.add('bi-eye');
+    }
+});
+
+// Demo user credentials
+function fillDemoUser() {
+    document.getElementById('username').value = 'demo_user';
+    document.getElementById('password').value = 'DemoUser123!';
+}
+
+function fillDemoAdmin() {
+    document.getElementById('username').value = 'admin';
+    document.getElementById('password').value = 'Admin123!';
+}
+
+// Form submission with loading state
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+    const submitBtn = this.querySelector('button[type="submit"]');
+    submitBtn.innerHTML = '<i class="bi bi-arrow-repeat me-2"></i>Accesso in corso...';
+    submitBtn.disabled = true;
+});
+</script>

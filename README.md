@@ -3,56 +3,90 @@
 <div align="center">
   <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js" />
   <img src="https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express" />
-  <img src="https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white" alt="SQLite" />
+  <img src="https://img.shields.io/badge/SQLite-07405E?style=for-the-badge&logo=sqlite&logoColor=white" alt="SQLite" />
+  <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
   <img src="https://img.shields.io/badge/Bootstrap-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white" alt="Bootstrap" />
   <img src="https://img.shields.io/badge/Chart.js-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=white" alt="Chart.js" />
 </div>
 
 <div align="center">
-  <h3>🎯 Professional ETF Investment Portfolio Management Platform</h3>
-  <p>A comprehensive web application for tracking, analyzing, and optimizing your Exchange-Traded Fund (ETF) investments with real-time market data and advanced analytics.</p>
+  <h3>🎯 Piattaforma Professionale Multi-Utente per la Gestione di Portafogli ETF</h3>
+  <p>Un'applicazione web completa e enterprise-ready per il tracking, l'analisi e l'ottimizzazione degli investimenti in Exchange-Traded Fund (ETF) con supporto multi-utente completo e gestione sessioni guest avanzata.</p>
 </div>
+
+> **🚀 Versione 3.0 Multi-User Ready**: Sistema di autenticazione completo, separazione dati utente, associazione automatica portfolio guest e architettura scalabile!
 
 ---
 
-## ✨ Key Features
+## ✨ Caratteristiche Principali
 
-### 📊 **Portfolio Management**
-- **Multi-Portfolio Support**: Create and manage multiple investment portfolios
-- **Real-Time Price Updates**: Automatic ETF price fetching from financial APIs
-- **Investment Tracking**: Detailed purchase history with profit/loss calculations
-- **Portfolio Transfers**: Seamlessly move investments between portfolios
+### 🔐 **Sistema Multi-Utente Completo**
+- **Autenticazione Sicura**: Login/registrazione con bcrypt e express-session
+- **Separazione Dati**: Ogni utente vede solo i propri portfolio e investimenti
+- **Utenti Demo**: Accesso immediato con credenziali predefinite
+- **Gestione Ruoli**: Amministratori e utenti standard con permessi differenziati
 
-### 📈 **Advanced Analytics**
-- **Performance Metrics**: Sharpe ratio, volatility, and risk assessment
-- **Historical Analysis**: 30-day, 90-day, and yearly performance tracking
-- **Diversification Score**: Automated portfolio diversification analysis
-- **Interactive Charts**: Beautiful visualizations powered by Chart.js
+### 🎯 **Gestione Sessioni Guest Avanzata**
+- **Access Senza Registrazione**: Gli utenti possono creare portfolio come guest
+- **Associazione Automatica**: Portfolio guest vengono associati dopo login/registrazione
+- **Migrazione Seamless**: Transizione trasparente da guest a utente autenticato
+- **Preservazione Dati**: Nessuna perdita di portfolio o investimenti durante la migrazione
 
-### 🚨 **Smart Alerts & Monitoring**
-- **Price Alerts**: Custom notifications for target prices
-- **Performance Thresholds**: Alerts for significant gains or losses
-- **Portfolio Rebalancing**: Suggestions for optimal asset allocation
+### 📊 **Gestione Portfolio Avanzata**
+- **Supporto Multi-Portfolio**: Creazione e gestione di portafogli multipli per utente
+- **Aggiornamenti Real-Time**: Recupero automatico prezzi ETF dalle API finanziarie
+- **Tracking Investimenti**: Storico dettagliato acquisti con calcoli profit/loss
+- **Trasferimenti Portfolio**: Spostamento seamless investimenti tra portfolio
 
-### 🌙 **Modern User Experience**
-- **Dark/Light Theme**: Toggle between visual themes
-- **Responsive Design**: Mobile-first responsive interface
-- **Real-Time Updates**: Live data synchronization
-- **Intuitive Navigation**: Clean, professional UI/UX
+### 📈 **Analytics Avanzate**
+- **Metriche Performance**: Sharpe ratio, volatilità, e valutazione del rischio
+- **Analisi Storica**: Performance tracking 30-giorni, 90-giorni, e annuale
+- **Diversification Score**: Analisi automatica diversificazione portfolio
+- **Grafici Interattivi**: Visualizzazioni avanzate powered by Chart.js
+
+### 👨‍💼 **Dashboard Amministrativo**
+- **Gestione Utenti**: CRUD completo utenti con controlli permessi
+- **Monitoraggio Sistema**: Statistiche real-time e health monitoring
+- **Analytics Sistema**: Metriche performance e utilizzo risorse
+- **Audit Logging**: Tracciamento completo operazioni amministrative
+
+### 🚨 **Sistema Alert Intelligente**
+- **Alert Prezzi**: Notifiche personalizzate per target prices
+- **Soglie Performance**: Alert per guadagni o perdite significative
+- **Rebalancing Portfolio**: Suggerimenti per allocazione asset ottimale
+
+### 🐳 **Enterprise Ready**
+- **Containerizzazione Docker**: Deployment completo con Docker Compose
+### 🐳 **Enterprise Ready**
+- **Architettura Scalabile**: Supporto SQLite (attuale) e PostgreSQL (futuro)
+- **Sicurezza Avanzata**: Password hashing bcrypt e sessioni sicure
+- **Containerizzazione Docker**: Deployment completo con Docker Compose
+- **Migration Tools**: Strumenti automatici per upgrade e migrazione dati
 
 ---
 
 ## 🚀 Quick Start
 
-### Prerequisites
-- **Node.js** (v14 or higher)
+### 🎯 **Accesso Immediato con Utenti Demo**
+
+Il sistema include utenti demo preconfigurati per test immediato:
+
+| 👤 Username | 🔑 Password | 🛡️ Ruolo | 📋 Descrizione |
+|-------------|-------------|-----------|----------------|
+| `admin` | `Admin123!` | Amministratore | Accesso completo al sistema |
+| `demo_user` | `DemoUser123!` | Utente Standard | Accesso funzionalità base |
+
+### 🛠️ **Setup Locale (Raccomandato)**
+
+#### Prerequisites
+- **Node.js** (v18 or higher)
 - **npm** (Node Package Manager)
 
-### Installation
+#### Installation
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/battuto/EtfManager.git
+   git clone https://github.com/yourusername/EtfManager.git
    cd EtfManager
    ```
 
@@ -61,57 +95,155 @@
    npm install
    ```
 
-3. **Start the application**
+3. **Initialize database and demo users**
+   ```bash
+   node fix_users.js
+   ```
+
+4. **Start the application**
    ```bash
    npm start
    # or
    node server.js
    ```
 
-4. **Access the application**
+5. **Access the application**
+   - **Main app**: http://localhost:3000
+   - **Login**: Use demo credentials above
+   - **Create portfolio as guest**: Access homepage without login
+
+### 🐳 **Option 2: Docker Deployment**
+
+For production deployment with PostgreSQL:
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/EtfManager.git
+cd EtfManager
+
+# Start with Docker Compose
+docker-compose up -d
+
+# Access the application
+# Main app: http://localhost:3000
+# Adminer (DB admin): http://localhost:8080
+```
+
+### � **Guest to User Flow**
+
+1. **📂 Create Portfolio as Guest**: Access http://localhost:3000 without login
+2. **💰 Add Investments**: Create investments in your guest portfolio
+3. **🔐 Register/Login**: Use the register form or demo credentials
+4. **✨ Automatic Association**: Your guest portfolio becomes linked to your account
+   ```bash
+   npm install
    ```
-   Open your browser and navigate to: http://localhost:3000
+
+3. **Setup environment (copy and modify)**
+   ```bash
+   cp .env.docker .env
    ```
+
+4. **Run database migration (if migrating from SQLite)**
+   ```bash
+   npm run migrate
+   ```
+
+5. **Start the application**
+   ```bash
+   npm start
+   ```
+
+#### Access
+- **Main Application**: http://localhost:3000
+- **Admin Dashboard**: http://localhost:3000/admin (admin users only)
 
 ---
 
-## 🏗️ Project Structure
+## 🏗️ Struttura del Progetto
 
 ```
 ETF-Portfolio-Manager/
-├── 📁 config/              # Database configuration
-├── 📁 controllers/         # Business logic controllers
-│   ├── alertController.js      # Alert management
-│   ├── analyticsController.js  # Portfolio analytics
-│   ├── investmentController.js # Investment CRUD operations
-│   └── portfolioController.js  # Portfolio management
-├── 📁 data/                # SQLite database files
-├── 📁 models/              # Data models
-├── 📁 public/              # Static assets (CSS, JS, images)
-├── 📁 routes/              # Express route definitions
-├── 📁 utils/               # Utility functions
-├── 📁 views/               # EJS templates
-├── 🔧 server.js            # Application entry point
-└── 📄 package.json         # Dependencies and scripts
+├── 📁 config/              # Configurazione database
+│   ├── database.js             # Config SQLite/PostgreSQL
+│   └── postgresql.js           # Setup PostgreSQL + Sequelize
+├── 📁 controllers/         # Controller business logic
+│   ├── alertController.js      # Gestione alert
+│   ├── analyticsController.js  # Analytics portfolio
+│   ├── authController.js       # Autenticazione utenti
+│   ├── investmentController.js # CRUD investimenti
+│   ├── portfolioController.js  # Gestione portfolio
+│   └── admin/
+│       └── adminController.js  # Dashboard amministrativo
+├── 📁 data/                # File database SQLite
+├── 📁 docker/              # Configurazioni Docker
+│   ├── nginx/                  # Config Nginx
+│   ├── postgres/               # Init scripts PostgreSQL
+│   └── README.md               # Guida deployment
+├── 📁 middleware/          # Middleware Express
+│   └── auth.js                 # Autenticazione JWT
+├── 📁 models/              # Modelli dati Sequelize
+├── 📁 public/              # Assets statici
+│   ├── css/                    # Stylesheet
+│   └── js/                     # JavaScript frontend
+├── 📁 routes/              # Definizioni route Express
+│   ├── index.js                # Route principali
+│   └── admin/                  # Route amministrative
+├── 📁 scripts/             # Script utilità
+│   └── migrate.js              # Script migrazione DB
+├── 📁 utils/               # Funzioni utility
+├── 📁 views/               # Template EJS
+│   ├── layouts/                # Layout principali
+│   ├── partials/               # Componenti riutilizzabili
+│   └── admin/                  # Template admin
+├── 🐳 docker-compose.yml   # Orchestrazione Docker
+├── 🐳 Dockerfile          # Container applicazione
+├── 🔧 server.js            # Entry point applicazione
+└── 📄 package.json         # Dipendenze e script
 ```
 
 ---
 
-## 💡 Core Technologies
+## 💡 Tecnologie Core
 
-| Technology | Purpose | Version |
-|------------|---------|---------|
+| Tecnologia | Scopo | Versione |
+|------------|-------|----------|
 | **Node.js** | Runtime Environment | Latest LTS |
 | **Express.js** | Web Framework | ^4.18.0 |
-| **SQLite** | Database | ^5.1.0 |
+| **PostgreSQL** | Database Produzione | ^8.11.0 |
+| **SQLite** | Database Sviluppo | ^5.1.0 |
+| **Sequelize** | ORM Database | ^6.35.0 |
 | **EJS** | Template Engine | ^3.1.0 |
-| **Chart.js** | Data Visualization | ^4.0.0 |
+| **Chart.js** | Visualizzazione Dati | ^4.0.0 |
 | **Bootstrap** | UI Framework | ^5.3.0 |
-| **SweetAlert2** | Beautiful Alerts | ^11.0.0 |
+| **Docker** | Containerizzazione | Latest |
+| **JWT** | Autenticazione | ^9.0.2 |
 
 ---
 
-## 📊 Features Overview
+## 📊 Panoramica Funzionalità
+
+### Gestione Investimenti
+- ✅ Aggiungi/Modifica/Elimina investimenti ETF
+- ✅ Importa/Esporta dati CSV
+- ✅ Aggiornamenti automatici prezzi
+- ✅ Storico transazioni dettagliato
+
+### Dashboard Analytics
+- 📈 **Grafico Composizione**: Visualizzazione allocazione portfolio
+- 📊 **Grafico Performance**: Tracking performance storica
+- 📉 **Timeline Chart**: Analisi timeline investimenti
+- 🎯 **Allocation Chart**: Raccomandazioni allocazione asset
+
+### Gestione Rischio
+- 🛡️ **Analisi Volatilità**: Calcoli deviazione standard
+- 📊 **Sharpe Ratio**: Metriche rendimento aggiustato per rischio
+- 🎯 **Diversification Score**: Valutazione bilanciamento portfolio
+- ⚠️ **Alert Rischio**: Notifiche automatiche rischio
+
+---
+
+## 📊 Panoramica Funzionalità (English)
 
 ### Investment Management
 - ✅ Add/Edit/Delete ETF investments

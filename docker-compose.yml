@@ -1,0 +1,156 @@
+# Docker Compose for ETF Portfolio Manager
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: etf_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-etf_portfolio}
+      POSTGRES_USER: ${POSTGRES_USER:-etf_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-etf_password_secure}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    networks:
+      - etf_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-etf_user} -d ${POSTGRES_DB:-etf_portfolio}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for Sessions and Caching
+  redis:
+    image: redis:7-alpine
+    container_name: etf_redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_password_secure}
+    volumes:
+      - redis_data:/data
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    networks:
+      - etf_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # ETF Portfolio Manager Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: etf_app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: ${PORT:-3000}
+      
+      # Database Configuration
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-etf_portfolio}
+      POSTGRES_USER: ${POSTGRES_USER:-etf_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-etf_password_secure}
+      
+      # Redis Configuration
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-redis_password_secure}
+      
+      # Security
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-this-in-production}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-your-32-character-encryption-key}
+      SESSION_SECRET: ${SESSION_SECRET:-your-session-secret-change-this}
+      
+      # External APIs
+      ALPHA_VANTAGE_API_KEY: ${ALPHA_VANTAGE_API_KEY:-demo}
+      FINANCIALMODELINGPREP_API_KEY: ${FINANCIALMODELINGPREP_API_KEY:-demo}
+      
+      # Email Configuration (optional)
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-noreply@etfmanager.com}
+      
+      # Rate Limiting
+      RATE_LIMIT_WINDOW: ${RATE_LIMIT_WINDOW:-15}
+      RATE_LIMIT_MAX_REQUESTS: ${RATE_LIMIT_MAX_REQUESTS:-100}
+      
+      # Logging
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      LOG_FILE: ${LOG_FILE:-logs/app.log}
+    volumes:
+      - ./logs:/app/logs
+      - ./backups:/app/backups
+      - ./uploads:/app/uploads
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    networks:
+      - etf_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Nginx Reverse Proxy (Production)
+  nginx:
+    image: nginx:alpine
+    container_name: etf_nginx
+    restart: unless-stopped
+    depends_on:
+      - app
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/ssl:/etc/nginx/ssl:ro
+      - ./public:/var/www/public:ro
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+    networks:
+      - etf_network
+    profiles:
+      - production
+
+  # Adminer for Database Management (Development)
+  adminer:
+    image: adminer:latest
+    container_name: etf_adminer
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    ports:
+      - "${ADMINER_PORT:-8080}:8080"
+    networks:
+      - etf_network
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+    profiles:
+      - development
+
+networks:
+  etf_network:
+    driver: bridge
+    name: etf_portfolio_network
+
+volumes:
+  postgres_data:
+    name: etf_postgres_data
+  redis_data:
+    name: etf_redis_data
